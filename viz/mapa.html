@@ -1,0 +1,355 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>VizItPL!</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="mapa.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.13/esri/css/esri.css">   
+    <link rel="stylesheet" type="text/css" href="bootstrapmap/src/css/bootstrapmap.css">   
+  </head>
+
+  <body>
+    
+          <div class="navbar navbar-inverse navbar-fixed-top" >
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="index.html">&nbsp;&nbsp;VizItPL!</a>
+            </div>
+            <div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+                <li><a href="index.html">Start</a></li>
+				<li><a href="mapa.html">Wybory 2010</a></li>
+				<li><a href="mapaRoznice.html">Zmiany 2005-2010</a></li>
+				<li><a href="mapaLudnosc.html">Demografia</a></li>
+				<li><a href="mapaZarobki.html">Styl życia</a></li>
+           		<li><a href="kontakt.html">Kontakt</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+	<div class="modal fade bs-example-modal-sm" id="load" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+			<div class="modal-header" id="header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="title">Jakie są wyniki?</h4>
+			</div>
+            <div class="modal-body" id="wait" style="text-align:center">
+                  Sprawdź wyniki w Twoim powiecie klikając, po prawej stronie ikonę <img src="images/lok.png"/></br></br>
+				  Aby podsumować wyniki w wybranym obszarze, kliknij ikonę <img src="images/mar.png"/></br>
+            </div>
+            </div>
+        </div><
+    </div>
+	<div class="modal fade bs-example-modal-sm" id="loadRad" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+			<div class="modal-header" id="header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="title">Jakie są wyniki w okolicy?</h4>
+			</div>
+            <div class="modal-body" id="wait" style="text-align:center">
+				Określ promień przeszukiwania: </br></br><input type="number" id="radVal" maxlength="3" min="0" max="999" step="5" value="50">&nbsp;kilometrów
+            </div>
+            </div>
+        </div><
+    </div>
+	<div id="mapDiv">
+		<div id="locateButtonCss"></div>
+		<div id="radChartButton">R</div>
+		<div id="sumViz" style='visibility:hidden;'></br><b>&nbsp;Brak statystyk dla bieżącego zasięgu</b></div>
+		<div id="removeButton">X</div>
+	
+	</div>
+
+
+	
+<script type="text/javascript">
+		var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+		var dojoConfig = {
+
+          packages: [{
+              name: "application",
+              location: package_path + '/bootstrapmap/src/js'
+          }]
+      };
+    </script>
+
+    <script src="http://js.arcgis.com/3.13/"></script>
+    <script>
+	
+        require(["esri/map", "esri/dijit/Popup", "esri/dijit/PopupTemplate",
+		"esri/layers/FeatureLayer", "esri/tasks/FeatureSet", "esri/geometry/Point","esri/graphicsUtils", "esri/graphic", 
+		"esri/tasks/query", "esri/tasks/DataFile", "esri/geometry/Circle",
+		"esri/SpatialReference", "esri/layers/GraphicsLayer", "esri/config",
+		"esri/symbols/SimpleMarkerSymbol","esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/renderers/UniqueValueRenderer", "esri/Color",
+		"esri/dijit/LocateButton", "esri/dijit/Scalebar", "dojo/number", "esri/urlUtils",
+		"application/bootstrapmap",
+		"dojo/dom-class", "dojo/dom-construct", "dojo/on", "dojo/dom", "dojo/_base/array", "dojo/parser", "dojo/_base/array",
+		"dojo/domReady!"],
+		
+        function(Map, Popup, PopupTemplate,
+		FeatureLayer,FeatureSet, Point, graphicsUtils, Graphic, 
+		Query, DataFile, Circle,
+		SpatialReference, GraphicsLayer, esriConfig,
+		SimpleMarkerSymbol,SimpleFillSymbol, SimpleLineSymbol, UniqueValueRenderer, Color,
+		LocateButton, Scalebar, number, urlUtils, 
+		BootstrapMap,
+		domClass, domConstruct, on, dom, array, parser, arrayUtil
+		) {
+		
+            var map = BootstrapMap.create("mapDiv", { 	
+              basemap: "dark-gray",   					
+              center: [19.387, 51.984], 
+			  scrollWheelZoom: true,			  
+              zoom: 6,
+			  maxScale:1155581
+              });
+			
+					
+			var oknoPod = new Popup({				
+					titleInBody: false					
+				}, domConstruct.create("div"));			
+				
+			map.infoWindow= oknoPod;					
+			
+			var szablon = new PopupTemplate({
+				title: "<b>{NAZ}</b>" });
+				
+				szablon.setContent("Procent głosów w 2010: <br/><br/>"+
+									"<b>za PO: </b>  ${PO2010:compare}<br/>" +
+									"<b>za PIS: </b>  ${PIS2010:compare}<br/>" +
+									"<b>Liczba głosów: </b>  ${Lglosow2010:compare}<br/><br/>"+
+									"<img src='images/up.png'/><img src='images/down.png'/><i> w porównaniu do 2005</i>");
+								  
+								  
+			compare = function (value, key, data) {
+				var result = "", pctChange;
+
+				switch (key) {
+					case "PO2010":
+						result = value > data.PO2005 ? "images/up.png" : "images/down.png";
+						pctChange = data.PO2010 - data.PO2005;
+						break;
+
+					case "PIS2010":
+						result = value > data.PIS2005 ? "images/up.png" : "images/down.png";
+						pctChange = data.PIS2010 - data.PIS2005;
+						break;
+					case "Lglosow2010":
+						result = value > data.Lglosow2005 ? "images/up.png" : "images/down.png";
+						pctChange = (data.Lglosow2010 - data.Lglosow2005)/data.Lglosow2005;
+						break;
+				}
+
+				return number.format(value) +
+					   "   <img src='" + result + "'/>" +
+					   "  <span style='color: " +
+					   (pctChange < 0 ? "red" : "green") + ";'>"
+						 + number.format(pctChange, { places: 1 }) +
+					   "%</span>";
+          };
+			
+			var powiaty = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/Powiaty/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["*"],		
+				infoTemplate: szablon,
+				opacity: 0.3
+			});
+			
+			var geomLokalizacja
+			var moveHandle;
+			var selLokCom;
+			var selBufCom;
+			var defaultSymbol = new SimpleFillSymbol().setStyle(SimpleFillSymbol.STYLE_NULL);
+			defaultSymbol.outline.setStyle(SimpleLineSymbol.STYLE_NULL);
+			var symbolCircle = new SimpleFillSymbol().setColor(null).outline.setColor("yellow").setWidth(2);
+			
+			var renderer = new UniqueValueRenderer(defaultSymbol, "Prowadz2010");
+
+			renderer.addValue("PO", new SimpleFillSymbol().setColor(new Color([255, 0, 0])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+			renderer.addValue("PIS", new SimpleFillSymbol().setColor(new Color([0, 0, 255])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+			powiaty.setRenderer(renderer);
+			
+			graphicsLayer = new GraphicsLayer({ id: "circles" });
+
+            map.addLayers([powiaty, graphicsLayer]); 					
+			
+			var przyciskLokalizuj = new LocateButton({	
+				map: map,								
+				scale:1155581,								
+				useTracking:false,
+				
+				}, "locateButtonCss");	
+			przyciskLokalizuj.startup();
+		
+			
+            var podzialkaLiniowa = new Scalebar({		
+				map: map,								
+				scalebarUnit: "metric"					
+            });
+
+						
+			$("#load").modal("show");
+		
+			przyciskLokalizuj.on("locate", przyciskLokalizujFn);
+			on(dom.byId("radChartButton"), "click", radiusChartFun);
+			on(dom.byId("removeButton"), "click", removeDisable);
+			
+					
+			function przyciskLokalizujFn(response){
+						if (selBufCom != null){
+						selBufCom.remove();
+						}
+						removeDisable();
+						
+						powiaty.clearSelection();
+						geomLokalizacja = response.graphic.geometry;				
+						//console.log(geomLokalizacja);
+						var query = new Query();
+						query.geometry = geomLokalizacja;
+						powiaty.selectFeatures(query, FeatureLayer.SELECTION_NEW);
+						selLokCom = powiaty.on("selection-complete", pokazWyniki);
+					}
+					
+			function pokazWyniki(wyniki){
+								removeDisable();
+								$("#load").modal("show");
+								var obaszarTekst = "";
+								var prowadz =wyniki.features[0].attributes.Prowadz2010;
+								powiaty.emit("click");
+	
+									if (prowadz == "PO") {
+										var poWar=wyniki.features[0].attributes.PO2010;
+										var poWarR = Math.round(poWar);
+										
+										dom.byId("title").innerHTML="Wygrywa PO !"
+										dom.byId("wait").innerHTML="Platforma Obywatelska uzyskała "  + poWarR + " % głosów."
+										
+										var fieldsSelectionSymbol = new SimpleFillSymbol().setColor(new Color([255, 0, 0])).setOutline(new SimpleLineSymbol().setColor(new Color([0, 255, 255])).setWidth(2));
+										powiaty.setSelectionSymbol(fieldsSelectionSymbol);
+										
+										}
+										else {
+										var pisWar=wyniki.features[0].attributes.PIS2010;
+				
+										var pisWarR = Math.round(pisWar);
+										
+										dom.byId("title").innerHTML="Wygrywa PIS !"
+										dom.byId("wait").innerHTML="Prawo i Sprawiedliwość uzyskał " + pisWarR + " % głosów."
+										
+										var fieldsSelectionSymbolPIS = new SimpleFillSymbol().setColor(new Color([0, 0, 255])).setOutline(new SimpleLineSymbol().setColor(new Color([0, 255, 255])).setWidth(2));
+										powiaty.setSelectionSymbol(fieldsSelectionSymbolPIS);
+										}
+								}
+					
+			function radiusChartFun (){
+						removeDisable();
+						$("#loadRad").modal("show");
+						powiaty.clearSelection();
+						powiaty.setSelectionSymbol(null);
+						if (selLokCom != null){
+							selLokCom.remove();
+						};
+						map.disableMapNavigation();
+						powiaty.disableMouseEvents();
+						moveHandle = map.on("mouse-move", onMapMove);
+						document.getElementById("sumViz").style.visibility="visible";
+
+					}
+			function onMapMove(evt) {
+					graphicsLayer.clear();
+						ptX = evt.mapPoint.x;
+                        ptY = evt.mapPoint.y;
+
+						var circle = new Circle({
+						center: evt.mapPoint,
+						geodesic: true,
+						radius: document.getElementById("radVal").value*1000,
+						units: "meters"
+						});
+	
+						var graphic = new Graphic(circle, symbolCircle);
+						graphicsLayer.add(graphic);
+						
+						var queryCircle = new Query();
+						queryCircle.geometry = circle.getExtent();
+
+						powiaty.selectFeatures(queryCircle, FeatureLayer.SELECTION_NEW);
+						selBufCom = powiaty.on("selection-complete", pokazWynikiCircle);
+					
+						
+			
+			}
+			
+			function pokazWynikiCircle(wynikiCircle){
+				
+				
+				var sumaGlosowR = 0;
+				var sumaGlosowPO = 0;
+				var sumaGlosowPIS = 0;
+					
+	
+					  arrayUtil.forEach(wynikiCircle.features, function (feature) {
+
+						sumaGlosowR += feature.attributes.Lglosow2010;
+						sumaGlosowPO += feature.attributes.NbPO2010;
+						sumaGlosowPIS += feature.attributes.NbPIS2010;
+						
+					  });
+					  
+					  var wynikPO = ((sumaGlosowPO/sumaGlosowR)* 100).toFixed(1);
+					  var wynikPIS = ((sumaGlosowPIS/sumaGlosowR)* 100).toFixed(1);
+					  
+					  if (wynikPO>= 50.1) {
+						dom.byId('sumViz').innerHTML = "</br><b style='color:red'>&nbsp;PO: " + wynikPO + " %</b>" +
+						"&nbsp;&nbsp;&nbsp;PIS: " + wynikPIS + "%</br></br>" + "&nbsp;Ogólna liczba głosów: " + sumaGlosowR ;
+					  
+					  
+					  } else if (wynikPIS>= 50.1){
+						dom.byId('sumViz').innerHTML = "</br>&nbsp;PO: " + wynikPO + " %" +
+						"<b style='color:blue'>&nbsp;&nbsp;&nbsp;PIS: " + wynikPIS + " %</b></br></br>" + "&nbsp;Ogólna liczba głosów: " + sumaGlosowR;
+
+					  } else{
+						dom.byId('sumViz').innerHTML = "</br><b>&nbsp;Brak statystyk dla bieżącego zasięgu</b>"
+					  }
+					  
+			
+			}
+		
+			function removeDisable (){
+			
+				map.enableMapNavigation();
+				powiaty.enableMouseEvents();
+				if (moveHandle != null){
+					moveHandle.remove();
+				}
+				document.getElementById("sumViz").style.visibility="hidden";
+				graphicsLayer.clear();
+			}
+			
+				
+			
+		});
+    </script>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>

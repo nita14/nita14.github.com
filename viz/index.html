@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>VizItPL!</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="carousel.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="navbar-wrapper">
+      <div class="container">
+        <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="index.html">&nbsp;&nbsp;VizItPL!</a>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li class="active"><a href="index.html">Start</a></li>
+				<li><a href="mapa.html">Wybory 2010</a></li>
+				<li><a href="mapaRoznice.html">Zmiany 2005-2010</a></li>
+				<li><a href="mapaLudnosc.html">Demografia</a></li>
+				<li><a href="mapaZarobki.html">Styl życia</a></li>
+           		<li><a href="kontakt.html">Kontakt</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="2000">
+      <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+		<li data-target="#myCarousel" data-slide-to="3"></li>
+      </ol>
+      <div class="carousel-inner">
+        <div class="item active">
+          <img src="images/pre.jpg" alt="Pierwszy slajd">
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>Wybory 2010</h1>
+              <p>Czy wiesz gdzie prezydent zdobył większość głosów? Kto zwycięzył w Twojej okolicy?</p>
+              <p><a class="btn btn-lg btn-primary" href="mapa.html" role="button">Sprawdź teraz!</a></p>
+            </div>
+          </div>
+        </div>
+		<div class="item">
+          <img src="images/roz.jpg" alt="trzeci slajd">
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>Zmiany 2005 - 2010</h1>
+              <p>Chcesz porównać preferencje wyborcze Polaków? Czy istnieją przestrzenne trendy?</p>
+              <p><a class="btn btn-lg btn-primary" href="mapaRoznice.html" role="button">Dowiedz się!</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <img src="images/dem.jpg" alt="slajd">
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>Demografia</h1>
+              <p>Czy liczba ludności i bezrobocie mają wpływ na wynik wyborów?</p>
+              <p><a class="btn btn-lg btn-primary" href="mapaLudnosc.html" role="button">Przekonaj się!</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <img src="images/sty.jpg" alt="trzeci slajd">
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>Styl życia</h1>
+              <p>Czy zarobki i wyznanie wyborców determinują wyniki wyborów?</p>
+              <p><a class="btn btn-lg btn-primary" href="mapaZarobki.html" role="button">Sprawdź teraz!</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+      <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="bootstrap/js/docs.min.js"></script>
+  </body>
+</html>

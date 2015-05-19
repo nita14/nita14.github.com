@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>VizItPL!</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="mapa.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.13/esri/css/esri.css">   
+    <link rel="stylesheet" type="text/css" href="bootstrapmap/src/css/bootstrapmap.css">   
+  </head>
+
+  <body>
+    
+          <div class="navbar navbar-inverse navbar-fixed-top" >
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="index.html">&nbsp;&nbsp;VizItPL!</a>
+            </div>
+            <div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+                <li><a href="index.html">Start</a></li>
+				<li><a href="mapa.html">Wybory 2010</a></li>
+				<li><a href="mapaRoznice.html">Zmiany 2005-2010</a></li>
+				<li><a href="mapaLudnosc.html">Demografia</a></li>
+				<li><a href="mapaZarobki.html">Styl życia</a></li>
+           		<li><a href="kontakt.html">Kontakt</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+	<div class="modal fade bs-example-modal-sm" id="load" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+			<div class="modal-header" id="header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="title">Styl życia i wyniki wyborów?</h4>
+			</div>
+            <div class="modal-body" id="wait" style="text-align:center">
+                  Sprawdź jakie są preferencje wyborcze w obszarach gdzie zarabia się najlepiej. Czy religijność ma wpływ na wyniki wyborów?</br></br>
+				  Sprawdź gdzie jest najwięcej i najmniej praktykujących katolików, klikając ikonę <img src="images/wiaw.png"/>
+            </div>
+            </div>
+        </div>
+    </div>
+	<div id="mapDiv">
+		<div id="wiara">W</div>
+		<div id="clearWiara">X</div>
+	
+	</div>
+
+
+	
+<script type="text/javascript">
+		var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+		var dojoConfig = {
+
+          packages: [{
+              name: "application",
+              location: package_path + '/bootstrapmap/src/js'
+          }]
+      };
+    </script>
+
+    <script src="http://js.arcgis.com/3.13/"></script>
+    <script>
+	
+        require(["esri/map", "esri/dijit/Popup", "esri/dijit/PopupTemplate",
+		"esri/layers/FeatureLayer", "esri/tasks/FeatureSet", "esri/geometry/Point","esri/graphicsUtils", "esri/graphic", 
+		"esri/tasks/query", "esri/tasks/DataFile", "esri/geometry/Circle",
+		"esri/SpatialReference", "esri/layers/GraphicsLayer", "esri/config",
+		"esri/symbols/SimpleMarkerSymbol","esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/Color", 
+		"esri/dijit/LocateButton", "esri/dijit/Scalebar", "dojo/number", "esri/urlUtils", "esri/renderers/smartMapping",
+		"application/bootstrapmap", "esri/renderers/UniqueValueRenderer",
+		"dojo/dom-class", "dojo/dom-construct", "dojo/on", "dojo/dom", "dojo/_base/array", "dojo/parser", "dojo/_base/array",
+		"dojo/domReady!"],
+		
+        function(Map, Popup, PopupTemplate,
+		FeatureLayer,FeatureSet, Point, graphicsUtils, Graphic,
+		Query, DataFile, Circle,
+		SpatialReference, GraphicsLayer, esriConfig,
+		SimpleMarkerSymbol,SimpleFillSymbol, SimpleLineSymbol, Color,
+		LocateButton, Scalebar, number, urlUtils, smartMapping,
+		BootstrapMap, UniqueValueRenderer,
+		domClass, domConstruct, on, dom, array, parser, arrayUtil
+		) {
+		
+            var map = BootstrapMap.create("mapDiv", { 	
+              basemap: "dark-gray",   					
+              center: [19.387, 51.984], 
+			  scrollWheelZoom: true,			  
+              zoom: 6,
+			  maxScale:1155581
+              });
+			
+			var podzialkaLiniowa = new Scalebar({		
+				map: map,								
+				scalebarUnit: "metric"					
+            });
+			
+			var defaultSymbol = new SimpleFillSymbol().setStyle(SimpleFillSymbol.STYLE_NULL);
+			defaultSymbol.outline.setStyle(SimpleLineSymbol.STYLE_NULL);
+			var wiara;
+			
+			var powiatyWyniki = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/Powiaty/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["Prowadz2010"],
+				opacity: 0.15
+			});
+			
+			var renderer = new UniqueValueRenderer(defaultSymbol, "Prowadz2010");
+
+			renderer.addValue("PO", new SimpleFillSymbol().setColor(new Color([171, 20, 0])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.1)));
+			renderer.addValue("PIS", new SimpleFillSymbol().setColor(new Color([0, 113, 171])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.1)));
+			powiatyWyniki.setRenderer(renderer);
+			map.addLayer(powiatyWyniki);
+			
+			
+			var powiatyZar = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/Zarobki/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["WynagrodzePolska"]
+			});
+			
+			smartMapping.createClassedSizeRenderer({
+               layer: powiatyZar,
+               field: "WynagrodzePolska",
+               basemap: map.getBasemap(),
+               classificationMethod: "equal-interval"
+            }).then(function (response) {
+               powiatyZar.setRenderer(response.renderer);
+			   map.addLayer(powiatyZar)	;
+            });
+			
+			
+		
+			
+			$("#load").modal("show");
+
+			on(dom.byId("wiara"), "click", renWiara);
+			on(dom.byId("clearWiara"), "click", clear);
+			
+			
+			
+			function renWiara () {
+				
+				wiara = new FeatureLayer(				
+					"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/Wiara/FeatureServer/0", { 
+					mode: FeatureLayer.MODE_SNAPSHOT
+				});
+				map.addLayer(wiara);
+			
+			
+			}
+			
+			function clear() {
+				map.removeLayer(wiara);
+			}
+			
+			
+	
+			
+				
+			
+		});
+    </script>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>

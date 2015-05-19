@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>VizItPL!</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="mapa.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.13/esri/css/esri.css">   
+    <link rel="stylesheet" type="text/css" href="bootstrapmap/src/css/bootstrapmap.css">   
+  </head>
+
+  <body>
+    
+          <div class="navbar navbar-inverse navbar-fixed-top" >
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="index.html">&nbsp;&nbsp;VizItPL!</a>
+            </div>
+            <div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+                <li><a href="index.html">Start</a></li>
+				<li><a href="mapa.html">Wybory 2010</a></li>
+				<li><a href="mapaRoznice.html">Zmiany 2005-2010</a></li>
+				<li><a href="mapaLudnosc.html">Demografia</a></li>
+				<li><a href="mapaZarobki.html">Styl życia</a></li>
+           		<li><a href="kontakt.html">Kontakt</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+	<div class="modal fade bs-example-modal-sm" id="load" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+			<div class="modal-header" id="header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="title">Jakie są tendencje?</h4>
+			</div>
+            <div class="modal-body" id="wait" style="text-align:center">
+                  Aby porównać wyniki, przesuń pionową prowadnicę w prawo lub w lewo </br></br>
+				  Zobacz różnice w preferencjach wyborczych klikając ikonę <img src="images/rozz.png"/></br></br>
+				  Sprawdź tendencje, wybierając ikonę <img src="images/rozs.png"/></br></br>
+				  Zobacz, gdzie są statystycznie istotne klastry zwolenników wybranej opcji politycznej, klikająć ikonę <img src="images/rozzp.png"/></br></br>
+            </div>
+            </div>
+        </div><
+    </div>
+	<div id="mapDiv">
+		<div id="swipeDiv"></div>
+		<div id="roz0510">Z</div>
+		<div id="mean0510">S</div>
+		<div id="sup0510">ZP</div>
+		<div id="clear0510">X</div>
+	
+	</div>
+
+
+	
+<script type="text/javascript">
+		var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+		var dojoConfig = {
+
+          packages: [{
+              name: "application",
+              location: package_path + '/bootstrapmap/src/js'
+          }]
+      };
+    </script>
+
+    <script src="http://js.arcgis.com/3.13/"></script>
+    <script>
+	
+        require(["esri/map", "esri/dijit/Popup", "esri/dijit/PopupTemplate",
+		"esri/layers/FeatureLayer", "esri/tasks/FeatureSet", "esri/geometry/Point","esri/graphicsUtils", "esri/graphic", 
+		"esri/tasks/query", "esri/tasks/DataFile", "esri/geometry/Circle",
+		"esri/SpatialReference", "esri/layers/GraphicsLayer", "esri/config",
+		"esri/symbols/SimpleMarkerSymbol","esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/renderers/UniqueValueRenderer", "esri/Color",
+		"esri/dijit/Scalebar", "dojo/number", "esri/urlUtils", "esri/dijit/LayerSwipe", "esri/layers/LabelLayer",
+		"application/bootstrapmap", "esri/renderers/SimpleRenderer", "esri/symbols/TextSymbol", "esri/symbols/Font",
+		"dojo/dom-class", "dojo/dom-construct", "dojo/on", "dojo/dom", "dojo/_base/array", "dojo/parser", "dojo/_base/array",
+		"dojo/domReady!"],
+		
+        function(Map, Popup, PopupTemplate,
+		FeatureLayer,FeatureSet, Point, graphicsUtils, Graphic, 
+		Query, DataFile, Circle,
+		SpatialReference, GraphicsLayer, esriConfig,
+		SimpleMarkerSymbol,SimpleFillSymbol, SimpleLineSymbol, UniqueValueRenderer, Color,
+		Scalebar, number, urlUtils, LayerSwipe, LabelLayer,
+		BootstrapMap, SimpleRenderer, TextSymbol, Font,
+		domClass, domConstruct, on, dom, array, parser, arrayUtil
+		) {
+		
+            var map = BootstrapMap.create("mapDiv", { 	
+              basemap: "dark-gray",   					
+              center: [19.387, 51.984], 
+			  scrollWheelZoom: true,			  
+              zoom: 6,
+			  maxScale:1155581
+              });
+			
+			var podzialkaLiniowa = new Scalebar({		
+				map: map,								
+				scalebarUnit: "metric"					
+            });
+			
+			var defaultSymbol = new SimpleFillSymbol().setStyle(SimpleFillSymbol.STYLE_NULL);
+			defaultSymbol.outline.setStyle(SimpleLineSymbol.STYLE_NULL);
+			var meanPoint;
+			var suppPoly;
+			var labels;
+			
+			var powiaty05 = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/Powiaty/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["*"]
+			});
+			
+			var renderer2005= new UniqueValueRenderer(defaultSymbol, "Prowadz2005");
+			renderer2005.addValue("PO", new SimpleFillSymbol().setColor(new Color([255, 0, 0])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+			renderer2005.addValue("PiS", new SimpleFillSymbol().setColor(new Color([0, 0, 255])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+			powiaty05.setRenderer(renderer2005);
+			map.addLayer(powiaty05);
+			
+			var powiaty10 = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/Powiaty/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["*"]
+			});
+			
+			var renderer2010= new UniqueValueRenderer(defaultSymbol, "Prowadz2010");
+			renderer2010.addValue("PO", new SimpleFillSymbol().setColor(new Color([255, 0, 0])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+			renderer2010.addValue("PIS", new SimpleFillSymbol().setColor(new Color([0, 0, 255])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+			powiaty10.setRenderer(renderer2010);
+			map.addLayer(powiaty10); 			
+			
+
+			var layerSwipe = new LayerSwipe({
+				type: "vertical",
+				left: 200,
+				map: map,
+				layers: [powiaty10]
+			  }, "swipeDiv");
+			 layerSwipe.startup();
+			
+			$("#load").modal("show");
+
+			on(dom.byId("roz0510"), "click", renderRoz2010);
+			on(dom.byId("mean0510"), "click", renderMean2010);
+			on(dom.byId("sup0510"), "click", renderSupp2010);
+			on(dom.byId("clear0510"), "click", renderDefault);
+
+			function renderRoz2010(){
+				
+				powiaty05.setOpacity(0.0);
+				layerSwipe.disable();
+				map.removeLayer(powiaty10);
+				var renderer0510= new UniqueValueRenderer(defaultSymbol, "ProwZmiana0510");
+				renderer0510.addValue("1", new SimpleFillSymbol().setColor(new Color([255, 0, 0])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+				renderer0510.addValue("2", new SimpleFillSymbol().setColor(new Color([0, 0, 255])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+				powiaty10.setRenderer(renderer0510);
+				map.addLayer(powiaty10);
+				
+				
+		
+			}
+			
+			function renderMean2010(){
+				powiaty10.setOpacity(0.0);
+				
+				meanPoint = new FeatureLayer(				
+				"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/Mean/FeatureServer/0", { 
+					mode: FeatureLayer.MODE_SNAPSHOT,		
+					outFields: ["*"]
+				});
+				var marker = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 5,
+						new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+						new Color([255,0,0]), 1),new Color([0,255,0,0.25]));
+				var rendererMean10 = new UniqueValueRenderer(marker, "nazwa");
+				rendererMean10.addValue("gl05",new SimpleMarkerSymbol().setColor(new Color([0, 255, 0, 0.5])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)).setSize(10));
+				rendererMean10.addValue("gl10",new SimpleMarkerSymbol().setColor(new Color([0, 255, 0, 0.5])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)).setSize(20));
+				
+				rendererMean10.addValue("po05",new SimpleMarkerSymbol().setColor(new Color([255, 0, 0, 0.5])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)).setSize(10));
+				rendererMean10.addValue("po10",new SimpleMarkerSymbol().setColor(new Color([255, 0, 0, 0.5])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)).setSize(20));
+				
+				rendererMean10.addValue("pis05",new SimpleMarkerSymbol().setColor(new Color([0, 0, 255, 0.5])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)).setSize(10));
+				rendererMean10.addValue("pis10",new SimpleMarkerSymbol().setColor(new Color([0, 0, 255, 0.5])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)).setSize(20));
+				meanPoint.setRenderer(rendererMean10);
+				map.addLayer(meanPoint);
+				var labelField = "opis";
+				var powLabel = new TextSymbol().setColor(new Color([255, 255, 255]));
+					powLabel.font.setSize("8pt");
+					powLabel.font.setFamily("arial");
+					powLabel.font.setWeight(Font.WEIGHT_BOLD);
+					powLabel.setOffset(3, -10);
+				var powLabelRenderer = new SimpleRenderer(powLabel);
+				labels = new LabelLayer();
+					labels.addFeatureLayer(meanPoint, powLabelRenderer, "{" + labelField + "}");
+				labels.setScaleRange(1155590,1155570);
+				map.addLayer(labels);
+				 
+				var loc = new Point(19.38425,51.85476 );
+				map.centerAndZoom(loc,1155581);
+					
+	
+						
+			}
+			function renderSupp2010(){
+				var locAll = new Point(19.387, 51.984);
+				map.centerAndZoom(locAll,6);
+				map.removeLayer(labels);
+				map.removeLayer(meanPoint);
+				
+				suppPoly = new FeatureLayer(				
+				"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/Supporters/FeatureServer/0", { 
+					mode: FeatureLayer.MODE_SNAPSHOT,		
+					outFields: ["*"],
+					opacity: 0.5
+				});
+				
+				//
+				var rendererSupp= new UniqueValueRenderer(defaultSymbol, "Gi_Bin");
+				rendererSupp.addValue("-3", new SimpleFillSymbol().setColor(new Color([69, 117, 181])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+				rendererSupp.addValue("-2", new SimpleFillSymbol().setColor(new Color([132, 158, 186])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+				rendererSupp.addValue("-1", new SimpleFillSymbol().setColor(new Color([192, 204, 190])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+				rendererSupp.addValue("0", new SimpleFillSymbol().setColor(new Color([255, 255, 191])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+				rendererSupp.addValue("1", new SimpleFillSymbol().setColor(new Color([250, 185, 132])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+				rendererSupp.addValue("2", new SimpleFillSymbol().setColor(new Color([237, 117, 81])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+				rendererSupp.addValue("3", new SimpleFillSymbol().setColor(new Color([214, 47, 39])).setOutline(new SimpleLineSymbol().setColor(new Color([255, 255, 255])).setWidth(0.5)));
+				suppPoly.setRenderer(rendererSupp);
+				map.addLayer(suppPoly);
+			
+			
+			}
+			
+						
+			function renderDefault(){
+				powiaty05.setOpacity(1.0);
+				powiaty10.setOpacity(1.0);
+				layerSwipe.enable();
+				map.removeLayer(suppPoly);	
+			
+			}
+			
+
+				
+			
+		});
+    </script>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
