@@ -1,0 +1,292 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Vistula</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="mapa.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.9/js/esri/css/esri.css">   
+    <link rel="stylesheet" type="text/css" href="bootstrapmap/src/css/bootstrapmap.css">   
+  </head>
+
+  <body>
+    
+          <div class="navbar navbar-inverse navbar-fixed-top" >
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="index.html"><img class="navbar-brand-image" src="images/water_white.png"> Vistula</a>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="index.html">Start</a></li>
+				<li><a href="mapa.html">Mapa</a></li>
+				<li><a href="edycja.html">Pomóż innym</a></li>
+				<li><a href="prognoza.html">Prognoza pogody</a></li>
+           		<li><a href="kontakt.html">Kontakt</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+	<div class="modal fade bs-example-modal-sm" id="load" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+			<div class="modal-header" id="header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="title">Czy grozi mi powódź?</h4>
+			</div>
+            <div class="modal-body" id="wait" style="text-align:center">
+                  Uzyskaj odpowiedź klikając, po prawej stronie ikonę <img src="images/lok.png"/>.
+            </div>
+            </div>
+        </div><
+    </div>
+	<div id="mapDiv">
+		<div id="locateButtonCss"></div>
+		<div id="closeFacButton">S</div>
+		<div id="addTrafficButton">N</div>
+		<div id="removeTrafficButton">X</div>
+	
+	</div>
+
+	
+<script type="text/javascript">
+      var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+      var dojoConfig = {
+
+          packages: [{
+              name: "application",
+              location: package_path + '/bootstrapmap/src/js'
+          }]
+      };
+    </script>
+
+    <script src="http://js.arcgis.com/3.9compact"></script>
+    <script>
+	
+        require(["esri/map", "esri/dijit/Popup", "esri/dijit/PopupTemplate",
+		"esri/layers/FeatureLayer", "esri/tasks/FeatureSet", "esri/geometry/Point","esri/graphicsUtils", "esri/graphic", "esri/layers/ArcGISDynamicMapServiceLayer",
+		"esri/tasks/ClosestFacilityTask", "esri/tasks/ClosestFacilityParameters", "esri/tasks/query", "esri/tasks/DataFile",
+		"esri/SpatialReference", "esri/geometry/webMercatorUtils", "esri/config",
+		"esri/symbols/SimpleMarkerSymbol","esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/Color",
+		"esri/dijit/LocateButton", "esri/dijit/Scalebar", "dojo/number", "esri/urlUtils",
+		"application/bootstrapmap",
+		"dojo/dom-class", "dojo/dom-construct", "dojo/on", "dojo/dom", "dojo/_base/array",
+		"dojo/domReady!"],
+		
+        function(Map, Popup, PopupTemplate,
+		FeatureLayer,FeatureSet, Point, graphicsUtils, Graphic, ArcGISDynamicMapServiceLayer,
+		ClosestFacilityTask, ClosestFacilityParameters, Query, DataFile,
+		SpatialReference, webMercatorUtils, esriConfig,
+		SimpleMarkerSymbol,SimpleFillSymbol, SimpleLineSymbol, Color,
+		LocateButton, Scalebar, number, urlUtils,
+		BootstrapMap,
+		domClass, domConstruct, on, dom, array
+		) {
+		
+            var map = BootstrapMap.create("mapDiv", { 	
+              basemap: "streets",   					
+              center: [20.995, 52.236], 
+			  scrollWheelZoom: true,			  
+              zoom: 14 
+              });					
+					
+			var oknoPod = new Popup({				
+					titleInBody: false					
+				}, domConstruct.create("div"));			
+				
+			map.infoWindow= oknoPod;					
+			
+			var szablon = new PopupTemplate({			
+				  title: "Strefa zalewowa",				
+				  description: "Warszawa" 				
+				});
+			var szablonSzpitale = new PopupTemplate({			
+				  title: "Szpital",				
+				  description: "{Nazwa} </br> Telefon: {Telefon} " 				
+				});
+			
+			var strefa = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/zagrozeniePowodziowe/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["*"],
+				opacity: 0.4,			
+				infoTemplate: szablon				
+			});
+			var szpitale = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/szpitaleWarszawa/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["*"],			
+				infoTemplate: szablonSzpitale				
+			});
+
+			map.addLayers([strefa,szpitale]); 					
+			
+			var przyciskLokalizuj = new LocateButton({	
+				map: map,								
+				//scale:2257,								
+				useTracking:false						
+				}, "locateButtonCss");					
+			
+            var podzialkaLiniowa = new Scalebar({		
+				map: map,								
+				scalebarUnit: "metric"					
+            });
+
+			var closestfacilityURL = new ClosestFacilityTask ("http://route.arcgis.com/arcgis/rest/services/World/ClosestFacility/NAServer/ClosestFacility_World");
+			var traffic
+			urlUtils.addProxyRule({
+					urlPrefix: "http://route.arcgis.com",  
+					proxyUrl: "http://caadamn/proxy/proxy.ashx"
+			  });
+			  
+			urlUtils.addProxyRule({
+					urlPrefix: "http://traffic.arcgis.com",  
+					proxyUrl: "http://caadamn/proxy/proxy.ashx"
+			  });
+
+			
+			$("#load").modal("show");
+			var geomLokalizacja
+			przyciskLokalizuj.on("locate", przyciskLokalizujFn);
+			on(dom.byId("closeFacButton"), "click", ClosestFacFun);
+			on(dom.byId("addTrafficButton"), "click", addTrafficButtonFun);
+			on(dom.byId("removeTrafficButton"), "click", removeTrafficButtonFun);
+				
+					function przyciskLokalizujFn(response){
+					
+						geomLokalizacja =webMercatorUtils.geographicToWebMercator(response.graphic.geometry);					
+						var queryStrefa = new Query();
+						queryStrefa.geometry = geomLokalizacja;
+						strefa.selectFeatures(queryStrefa, FeatureLayer.SELECTION_NEW);
+						strefa.on("selection-complete", pokazWyniki);
+						
+						
+						function pokazWyniki(wyniki){
+								$("#load").modal("show");
+								var obaszarTekst = "";		
+									if (wyniki.features.length > 0) {
+
+									dom.byId("title").innerHTML="Jesteś w niebezpieczeństwie"
+									dom.byId("wait").innerHTML="Znajdujesz się na obszarze, na którym może wystąpić powódź." + "</br>" + "Znajdź najbliższy szpital kilkając ikonę <img src='images/szp.png'/>"}
+									else {
+									dom.byId("title").innerHTML="Jesteś bezpieczny"
+									dom.byId("wait").innerHTML="Nie znajdujesz się na obszarze, na którym może wystąpić powódź." + "</br>" + "<a href='edycja.html'>Pomóż innym !</a>" + "</br>" + "lub znajdź najbliższy szpital kilkając ikonę <img src='images/szp.png'/>" }
+							}
+										
+							
+			
+					}
+					
+					function ClosestFacFun (){
+							
+		
+					
+						$("#load").modal("show");
+						dom.byId("title").innerHTML="Wyznaczanie trasy do szpitala"
+						dom.byId("wait").innerHTML="Chwileczkę .. " + "<img src='images/wheel.gif'/>"
+						
+							najblizszyS = new ClosestFacilityParameters();		
+							najblizszyS.impedanceAttributeName= "Kilometers";      	
+							najblizszyS.defaultCutoff= 15;      			
+							najblizszyS.returnIncidents=false;			
+							najblizszyS.returnRoutes=true;				
+							najblizszyS.returnDirections=true;
+									
+		
+						var location = new Graphic(geomLokalizacja);				
+						var features = [];						
+						features.push(location);					
+						var incidents = new FeatureSet();				
+						incidents.features = features;					
+						najblizszyS.incidents = incidents;			
+						
+
+						var fac = new FeatureSet();				
+						fac.features = szpitale.graphics;	
+						najblizszyS.facilities = new DataFile({
+							url: "http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/szpitaleWarszawa/FeatureServer/0/query?where=1%3D1&returnGeometry=true&outFields=*&f=json"
+						
+						});
+						
+						
+						
+						closestfacilityURL.solve(najblizszyS, najblizszyWynik, wystapilBlad);
+						
+					
+					}
+		
+						function najblizszyWynik(wynikAnalizy){
+							
+								var trasaSymbol = new SimpleLineSymbol(
+									SimpleLineSymbol.STYLE_SOLID, 
+									new Color([204,0,204,0.7]), 
+									3.0
+									);
+								
+								array.forEach(wynikAnalizy.routes , function(trasa){
+									trasa.setSymbol(trasaSymbol);  			
+									map.graphics.add(trasa);
+									map.setExtent(graphicsUtils.graphicsExtent(wynikAnalizy.routes), true); 
+									dom.byId("title").innerHTML= 'Udało się !';	
+									dom.byId("wait").innerHTML= 'Trasa wynosi ' + number.format(trasa.attributes.Total_Kilometers, {places: 3}) + ' kilometrów' +
+									'</br>' + 'Można ją pokonac w czasie: ' + number.format(trasa.attributes.Total_TravelTime, {places: 0}) + ' minut' + 
+									"</br></br>" + "Co dalej? Dodaj do mapy aktualne natężenie ruchu wybierając <img src='images/nat.png'/>"; 
+									  	
+									});
+							
+							
+							
+							}
+
+							
+							function wystapilBlad(blad){
+								dom.byId("wait").innerHTML= 'Coś poszło nie tak ' + blad.message; 	
+							}
+							
+							function addTrafficButtonFun(){
+
+								traffic = new ArcGISDynamicMapServiceLayer("http://traffic.arcgis.com/arcgis/rest/services/World/Traffic/MapServer/", {
+								id: "trafficLyr",
+								opacity: 0.6
+						
+							});
+								$("#load").modal("show");
+								dom.byId("title").innerHTML= "Wyczyść mapę";	
+								dom.byId("wait").innerHTML= "Usuń wyniki analiz klikając <img src='images/del.png'/>"; 
+									
+							map.addLayer(traffic);
+							
+							}
+							
+						
+							function removeTrafficButtonFun(){
+							
+							
+							map.removeLayer(traffic);
+							map.graphics.clear();
+							
+							}
+			
+	
+			
+		});
+    </script>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>

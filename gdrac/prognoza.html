@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Vistula</title>>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="mapa.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.9/js/esri/css/esri.css">   
+    <link rel="stylesheet" type="text/css" href="bootstrapmap/src/css/bootstrapmap.css">   
+  </head>
+  <body>
+    
+     
+        <div class="navbar navbar-inverse navbar-fixed-top" >
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="index.html"><img class="navbar-brand-image" src="images/water_white.png"> Vistula</a>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="index.html">Start</a></li>
+				<li><a href="mapa.html">Mapa</a></li>
+				<li><a href="edycja.html">Pomóż innym</a></li>
+				<li><a href="prognoza.html">Prognoza pogody</a></li>
+           		<li><a href="kontakt.html">Kontakt</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+	<div id="mapDiv">
+	</div>
+
+
+	
+<script type="text/javascript">
+      var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+      var dojoConfig = {
+          packages: [{
+              name: "application",
+              location: package_path + '/bootstrapmap/src/js'
+          }]
+      };
+    </script>
+    <script src="http://js.arcgis.com/3.9"></script>
+    <script>
+        require(["esri/map", "esri/layers/WebTiledLayer",
+		"esri/dijit/LocateButton", "esri/dijit/Scalebar", 
+		"application/bootstrapmap", 
+		"dojo/dom-class", "dojo/dom-construct", "dojo/on", "dojo/dom", "dojo/_base/array",
+		"esri/config", "dojo/domReady!"],
+        function(Map, WebTiledLayer,
+		LocateButton, Scalebar, 
+		BootstrapMap,
+		domClass, domConstruct, on, dom, array, esriConfig
+		) {
+		
+            var map = BootstrapMap.create("mapDiv", { 	
+              basemap: "gray",   					
+              center: [19.295, 51.236], 
+			  scrollWheelZoom: true,			  
+              zoom: 5
+              });					
+					
+				
+			var podzialkaLiniowa = new Scalebar({		
+				map: map,								
+				scalebarUnit: "metric"					
+            });
+			
+			var tempLayer = new WebTiledLayer("http://undefined.tile.openweathermap.org/map/temp/${level}/${col}/${row}.png", {
+			  "copyright": "Open Weather Map",
+			  "id": "Open Weather Map",
+			  "opacity": 0.2
+			});
+			var rainLayer = new WebTiledLayer("http://undefined.tile.openweathermap.org/map/rain/${level}/${col}/${row}.png", {
+			  "copyright": "Open Weather Map",
+			  "id": "Open Weather Map rain",
+			  "opacity": 0.6
+			});
+          
+
+          map.addLayers([tempLayer,rainLayer]);
+		
+		});
+    </script>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>

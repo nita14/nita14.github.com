@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Vistula</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="mapa.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.9/js/esri/css/esri.css">   
+    <link rel="stylesheet" type="text/css" href="bootstrapmap/src/css/bootstrapmap.css">   
+  </head>
+
+  <body>
+    
+     
+        <div class="navbar navbar-inverse navbar-fixed-top" >
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="index.html"><img class="navbar-brand-image" src="images/water_white.png"> Vistula</a>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="index.html">Start</a></li>
+				<li><a href="mapa.html">Mapa</a></li>
+				<li><a href="edycja.html">Pomóż innym</a></li>
+				<li><a href="prognoza.html">Prognoza pogody</a></li>
+           		<li><a href="kontakt.html">Kontakt</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+	<div class="modal fade bs-example-modal-sm" id="load" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+			<div class="modal-header" id="header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="title">Chcę dodać nowe zgłoszenie</h4>
+			</div>
+            <div class="modal-body" id="wait" style="text-align:center">
+                 <button id="btnPrzyg" type="button" class="btn btn-success btn-block" data-dismiss="modal">Jestem przygotowany</button></br>
+				 <button id="btnOferP" type="button"  class="btn btn-info btn-block" data-dismiss="modal">Oferuję pomoc</button></br>
+                 <button id="btnPotrz" type="button" class="btn btn-warning btn-block" data-dismiss="modal">Potrzebuję pomocy</button></br>
+				 <button id="btnSytau" type="button" class="btn btn-danger btn-block" data-dismiss="modal">Sytuacja kryzysowa</button></br>
+            </div>
+            </div>
+        </div><
+    </div>
+	<div class="modal fade bs-example-modal-sm" id="infor" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+			<div class="modal-header" id="headerInfor">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="titleInfor">Informacje o zdarzeniu</h4>
+			</div>
+            <div class="modal-body" id="attrInfor" style="text-align:left">
+						Twoje dane: <input id="inputDane" type="text" size="20" placeholder="Imię i Nazwisko"/></br></br>
+						Data: <input id="inputData" type="date" size="8"/></br></br>
+						Telefon: <input id="inputTel" type="text" size="15" placeholder="+48 666 666 666"/></br></br>
+						Uwagi: <input id="inputUwagi" type="text" size="30"/></br></br>
+						<!--Dodaj zdjęcie lub film: <input id="inputZal" type="file" size="3"/></br></br>-->
+						<button id="btnZatw" type="button" style="align:center" class="btn btn-primary btn-block" data-dismiss="modal">Zatwierdź</button>
+		
+            </div>
+            </div>
+        </div>
+    </div>
+	
+	<div id="mapDiv">
+			<div id="locateButtonCss"></div>	
+	</div>
+
+	
+<script type="text/javascript">
+      var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+      var dojoConfig = {
+          packages: [{
+              name: "application",
+              location: package_path + '/bootstrapmap/src/js'
+          }]
+      };
+    </script>
+    <script src="http://js.arcgis.com/3.9compact"></script>
+    <script>
+        require(["esri/map", "esri/dijit/Popup", "esri/dijit/PopupTemplate",
+		"esri/layers/FeatureLayer", "esri/tasks/FeatureSet", "esri/geometry/Point","esri/graphicsUtils", "esri/graphic",
+		"esri/tasks/ClosestFacilityTask", "esri/tasks/ClosestFacilityParameters", "esri/tasks/query", "esri/tasks/DataFile",
+		"esri/SpatialReference", "esri/geometry/webMercatorUtils", "esri/config",
+		"esri/symbols/PictureMarkerSymbol","esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/Color", "esri/renderers/UniqueValueRenderer",
+		"esri/dijit/LocateButton", "esri/dijit/Scalebar", "dojo/number", "esri/urlUtils",
+		"application/bootstrapmap",
+		"dojo/dom-class", "dojo/dom-construct", "dojo/on", "dojo/dom", "dojo/_base/array",
+		"dojo/domReady!"],
+        function(Map, Popup, PopupTemplate,
+		FeatureLayer,FeatureSet, Point, graphicsUtils, Graphic,
+		ClosestFacilityTask, ClosestFacilityParameters, Query, DataFile,
+		SpatialReference, webMercatorUtils, esriConfig,
+		PictureMarkerSymbol,SimpleFillSymbol, SimpleLineSymbol, Color,UniqueValueRenderer,
+		LocateButton, Scalebar, number, urlUtils,
+		BootstrapMap,
+		domClass, domConstruct, on, dom, array
+		) {
+		
+            var map = BootstrapMap.create("mapDiv", { 	
+              basemap: "gray",   					
+              center: [20.995, 52.236], 
+			  scrollWheelZoom: true,			  
+              zoom: 10
+              });					
+			
+			var oknoPod = new Popup({				
+					titleInBody: false					
+				}, domConstruct.create("div"));			
+				
+			map.infoWindow= oknoPod;					
+			
+			var szablon = new PopupTemplate({			
+				  title: "{Typ}",				
+				  description: "Zgłoszone przez: {Dane} </br> Telefon: {Telefon} </br> Uwagi: {Uwagi} </br> Data: {Data}" 				
+				});
+			
+			var zglosz = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/ZgloszVis/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["*"],
+				infoTemplate: szablon				
+			});		
+			
+			urlUtils.addProxyRule({
+					urlPrefix: "http://services.arcgis.com/",  
+					proxyUrl: "http://caadamn/proxy/proxy.ashx"
+			  });
+			
+				var pictureMarkerSymbol = new PictureMarkerSymbol('images/zgz.png', 20, 20);
+				var renderer = new UniqueValueRenderer(pictureMarkerSymbol, "Typ");
+
+				 
+					  renderer.addValue("Przygotowany", new PictureMarkerSymbol('images/zgz.png', 20, 20));
+					  renderer.addValue("Oferuję pomoc", new PictureMarkerSymbol('images/zgn.png', 20, 20));
+					  renderer.addValue("Potrzebuję pomocy", new PictureMarkerSymbol('images/zgp.png', 20, 20));
+					  renderer.addValue("Sytuacja kryzysowa", new PictureMarkerSymbol('images/zgc.png', 20, 20));
+					  zglosz.setRenderer(renderer);
+			
+			map.addLayer(zglosz);		
+			$("#load").modal("show");
+			
+						
+			
+			var przyciskLokalizuj = new LocateButton({	
+				map: map,								
+				highlightLocation: false,								
+				useTracking:false						
+				}, "locateButtonCss");					
+			
+            var podzialkaLiniowa = new Scalebar({		
+				map: map,								
+				scalebarUnit: "metric"					
+            });
+			var TypZd = ""
+			var geomLokalizacja
+			var grafika
+			var attr
+			
+			on(dom.byId("btnPrzyg"), "click", btnPrzygFun);
+			on(dom.byId("btnOferP"), "click", btnOferPFun);
+			on(dom.byId("btnPotrz"), "click", btnPotrzFun);
+			on(dom.byId("btnSytau"), "click", btnSytauFun);
+			on(dom.byId("btnZatw"), "click", zastosujZmiany);
+			przyciskLokalizuj.on("locate", przyciskLokalizujFn);
+			
+			function btnPrzygFun(){	
+					zmianaOkna("Przygotowany")		
+			}
+			function btnOferPFun(){	
+					zmianaOkna("Oferuję pomoc")		
+			}
+			function btnPotrzFun(){	
+					zmianaOkna("Potrzebuję pomocy")		
+			}
+			function btnSytauFun(){	
+					zmianaOkna("Sytuacja kryzysowa")		
+			}
+			
+			
+			function zmianaOkna(typ){
+						$("#infor").modal("show");
+						TypZd = typ;
+						przyciskLokalizuj.locate();
+					
+						
+			}	
+			
+			
+			function przyciskLokalizujFn(response){
+					
+						geomLokalizacja =webMercatorUtils.geographicToWebMercator(response.graphic.geometry);
+			}
+			
+			function zastosujZmiany(){
+						
+					grafika = new Graphic(geomLokalizacja)
+					attr = {
+						Typ: TypZd,
+						Dane: dom.byId("inputDane").value,
+						Telefon: dom.byId("inputTel").value,
+						Dane: dom.byId("inputUwagi").value,
+						Data: dom.byId("inputData").value
+						
+					}
+					grafika.setAttributes(attr);
+					zglosz.applyEdits([grafika]);
+					dom.byId("attrInfor").innerHTML="Chwileczkę .. " + "<img src='images/wheel.gif'/>"
+			
+			}
+			
+			zglosz.on("edits-complete", zatwZglosz);
+			zglosz.on("add-attachment-complete", zatwZalacznik);
+			function zatwZglosz(wynik){
+				zglosz.redraw();
+				$("#infor").modal("hide");
+				var Oid = wynik.adds[0].objectId;
+				
+				//$("#infor").modal("show");
+				//zglosz.addAttachment(Oid, dom.byId("inputZal"));
+			}
+			
+			function zatwZalacznik(){
+				zglosz.redraw();
+				$("#infor").modal("hide");
+				
+				
+				
+			}
+			
+			
+		});
+    </script>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
