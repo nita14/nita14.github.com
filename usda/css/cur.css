@@ -1,0 +1,155 @@
+.LocateButton .zoomLocateButton {
+	background-color: rgba(30,30,30)!important;
+
+}
+
+#status{
+	position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+.fileUpload {
+    position: relative;
+    overflow: hidden;
+    margin: 10px;
+}
+.fileUpload input.upload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.esriPopup .titleButton.close {
+		background-position: -34px 0;
+ }
+.esriPopup .titleButton.prev {
+		background-position: 0px 0;
+  }
+.esriPopup .pointer, .esriPopup .outerPointer {
+	  position: absolute;
+	  width: 24px;
+	  z-index: 0;
+	  -webkit-transform: rotate(0deg);
+	  -webkit-box-shadow: 0 0 0.0;
+}
+
+.esriPopup .pointer.bottom {
+	  display: block;
+	  left: 50%;
+	  margin-left: -12px;
+	  height: 8px;
+ }
+ 
+ .LayerSwipe .vertical {
+    position: absolute;
+    border-left: 1px solid #fff;
+    border-right: 1px solid #fff;
+    background-color: #FA0105;
+    width: 8px;
+    height: 100%;
+    padding: 0!important;
+    margin: 0;
+    z-index: 30;
+    cursor: col-resize;
+}
+
+.LayerSwipe .vertical .handle {
+    vertical-align: middle;
+    color: #fff;
+	text-align: center;
+    font-weight: bold;
+	font-size: 11px;
+    width: 70px;
+    height: 38px;
+    margin: -16px 0 0 -35px;
+    position: absolute;
+    z-index: 30;
+    top: 50%;
+    left: 50%;
+    background-color: #FA0105;
+    border: 2px solid #fff;
+	background-image: none; !important
+	
+
+}
+
+.esriScalebarLabel {
+	color: rgb(0,0,0);
+}
+
+#info {
+        width: 20%;
+		height: 70%;
+        background-color: rgba(0,0,0,0.9);
+        color: #fff;
+		position: absolute;
+		top: 70px;
+		right: 10px;
+        padding-left: 10px;
+        padding-top: 10px;
+        font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+		border-style: solid;
+		border-width: 1px;
+        border-top-right-radius: 5px;
+		border-top-left-radius: 5px;
+		border-bottom-right-radius: 5px;
+		border-bottom-left-radius: 5px;
+		z-index: 80;
+}
+
+@media only screen and (max-width: 1400px) {
+	#info {
+			width: 70%;
+			height: 70%;
+			background-color: rgba(0,0,0,0.9);
+			color: #fff;
+			position: absolute;
+			top: 70px;
+			right: 10px;
+			padding-left: 10px;
+			padding-top: 10px;
+			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+			border-style: solid;
+			border-width: 1px;
+			border-top-right-radius: 5px;
+			border-top-left-radius: 5px;
+			border-bottom-right-radius: 5px;
+			border-bottom-left-radius: 5px;
+			z-index: 80;
+	}
+}
+
+#legend {
+        width: 11%;
+		height: 76%;
+        background-color: rgba(0,0,0,0.9);
+        color: #fff;
+		position: absolute;
+		top: 100px;
+		left: 10px;
+        padding-left: 10px;
+        padding-top: 10px;
+        font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+		font-size: 11px;
+		border-style: solid;
+		border-width: 1px;
+        border-top-right-radius: 5px;
+		border-top-left-radius: 5px;
+		border-bottom-right-radius: 5px;
+		border-bottom-left-radius: 5px;
+		z-index: 80;
+}
+
+#con{
+	position: relative;
+	left: 2px;
+}
+
+

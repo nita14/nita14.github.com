@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Moultrie</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/stylish-portfolio.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+   
+	<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.14/esri/css/esri.css">   
+    <link rel="stylesheet" type="text/css" href="bootstrapmap/src/css/bootstrapmap.css">
+	<link href="css/cur.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="fa fa-bars"></i></a>
+    <nav id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="fa fa-times"></i></a>
+			<li class="sidebar-brand">
+                <a onclick = $("#menu-close").click(); >Moultrie</a>
+            </li>
+            <li>
+                <a id="compareButton">Compare Yields</a>
+            </li>
+			<li>
+                <a id="nearPoi">Search for the nearest...</a>
+            </li>
+            <li>
+                <a id="showLegend">Show legend</a>
+            </li>
+        </ul>
+    </nav>
+	<!-- Load to routing results -->
+
+
+
+	<!--notifications-->
+	<div class="modal fade bs-example-modal-sm" id="buffer" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+			<div class="modal-header" id="header">
+				<h4 class="modal-title" id="title" style="text-align:center;"><b>Radius selection</b></h4>
+			</div>
+            <div class="modal-body" id="geolok" style="text-align: center">
+                 Specify input circle radius of &nbsp;
+				<input type="number" id="radVal" maxlength="2" min="0" max="99" step="1" value="3">
+				&nbsp; kilometers and click on the map to set it's center. </br></br>
+				<button id="btnCommit" type="button" style="align:center" class="btn btn-primary btn-block" data-dismiss="modal">Ok, ready to go!</button>
+            </div>
+            </div>
+        </div><
+    </div>
+
+	<div id="mapDiv">
+        <div id="status" style="position: absolute; top: 50%; left: 50%; visibility:visible; z-index:6">
+                  <img src="img/loading.gif"/></br>
+        </div>
+		<div id="swipeDiv"></div>
+		<div id="info" style="visibility:hidden;">
+			<div style="width: 95%; height: 40%;">
+				<h4 style="text-align:center; color:#f89927 ;"><b>Compare crops from 2014 to 2012</b></h4></br>
+				<p style="text-align:center;">Specify the area to compare using:</p>
+					<div align="center">
+					<button id="radiusExtent" type="button" class="btn btn-info">Radius</button>
+					<button id="currentExtent" type="button" class="btn btn-info">Extent</button>
+						<div id ="comLeg" style="visibility:hidden; text-align: center; text"></br>
+							<div>% of crop type in <font color="#50ABC0">2014,</font>
+							<font color="#F89927">2013</font>
+							<font color="#DCDCDC">and 2012</font></div>
+						</div>
+					</div>
+			</div>
+			<div style="width: 95%; height: 55%;" id="con">
+				<canvas id="chart" height="200" width="300"></canvas>
+			</div>
+						
+			
+			
+		</div>
+		<div id="legend" style="visibility: hidden;">
+			<div id="leg"></div>
+		</div>
+
+		
+		
+		
+	
+    </div>
+	
+
+
+    <!-- Custom Theme JavaScript -->
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+    <script>
+    // Closes the sidebar menu
+	
+    $("#menu-close").click(function(e) {
+		e.preventDefault();
+        $("#sidebar-wrapper").toggleClass("active");
+    });
+
+    // Opens the sidebar menu
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#sidebar-wrapper").toggleClass("active");
+    });
+	
+
+	
+
+
+    </script>
+	<script type="text/javascript">
+		var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+		var dojoConfig = {
+
+          packages: [{
+              name: "application",
+              location: package_path + '/bootstrapmap/src/js'
+          }]
+      };
+    </script>
+	<script src="http://js.arcgis.com/3.14/"></script>
+    <script>
+		var map;
+		var radius = false;
+		var admBound;
+		var sum2014= [], sum2013= [], sum2012= [], listCropTypes = [];
+		var iter = 0;
+		var area2014 = 0; var area2013 = 0; var area2012 = 0;
+		var chartD = false;
+		
+		
+		
+        require(["esri/map", "esri/layers/FeatureLayer",  "esri/layers/ArcGISTiledMapServiceLayer",
+		"esri/dijit/Scalebar", "./chart/Chart.js",
+		"application/bootstrapmap", "esri/domUtils",
+		"esri/dijit/LayerSwipe", "esri/dijit/Legend",
+		"esri/geometry/Point", "esri/SpatialReference",
+		"esri/Color", "esri/symbols/SimpleMarkerSymbol",
+		"esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "esri/renderers/SimpleRenderer",
+		"esri/urlUtils", "esri/tasks/query", "esri/tasks/QueryTask", "esri/tasks/StatisticDefinition",
+		"esri/tasks/FeatureSet", "esri/geometry/webMercatorUtils", 
+		"esri/graphicsUtils", "esri/graphic", "esri/geometry/Extent", "esri/geometry/geometryEngine",
+		"dojo/dom-class", "dojo/dom-construct", "dojo/on", "dojo/dom", "dojo/_base/array", "dojo/number",
+		"dojo/domReady!"],
+		
+        function(Map, FeatureLayer, ArcGISTiledMapServiceLayer,
+		Scalebar, Chart,
+		BootstrapMap, domUtils,
+		LayerSwipe, Legend,
+		Point, SpatialReference, 
+		Color, SimpleMarkerSymbol, 
+		SimpleLineSymbol, SimpleFillSymbol, SimpleRenderer,
+		urlUtils, Query, QueryTask, StatisticDefinition,
+		FeatureSet, webMercatorUtils, 
+		graphicsUtils, Graphic, Extent, geometryEngine,
+		domClass, domConstruct, on, dom, arrayUtil, number
+		) {
+			
+			           
+			map = BootstrapMap.create("mapDiv", { 	
+				basemap: "dark-gray",
+				center: [-88.641, 39.619], 		  
+				zoom: 12,
+				maxScale: 17000
+				
+              });
+			
+			var buffFade = new SimpleFillSymbol(SimpleFillSymbol.STYLE_NULL, 
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 255, 255]), 5), null);
+			var buffSymFade = new SimpleFillSymbol(SimpleFillSymbol.STYLE_NULL, 
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASH, new Color([255, 130, 0]), 2), null);
+
+			var cropFs2014 = new QueryTask("https://services.arcgis.com/rQ4nYWw3vwjxcr1D/ArcGIS/rest/services/Crops/FeatureServer/1");
+			var cropFs2013 = new QueryTask("https://services.arcgis.com/rQ4nYWw3vwjxcr1D/ArcGIS/rest/services/Crops/FeatureServer/2"); 
+			var cropFs2012 = new QueryTask("https://services.arcgis.com/rQ4nYWw3vwjxcr1D/ArcGIS/rest/services/Crops/FeatureServer/3"); 			
+			
+			
+			var podzialkaLiniowa = new Scalebar({		
+				map: map,								
+				scalebarUnit: "metric"					
+            });
+			
+				  
+			
+			var crop2013 = new ArcGISTiledMapServiceLayer("https://tiles.arcgis.com/tiles/rQ4nYWw3vwjxcr1D/arcgis/rest/services/Crops2013/MapServer", {
+				id: "crop2013"
+			});
+			
+			var crop2014 = new ArcGISTiledMapServiceLayer("https://tiles.arcgis.com/tiles/rQ4nYWw3vwjxcr1D/arcgis/rest/services/Crops2014/MapServer", {
+				id: "crop2014"
+			});
+			
+			admBound = new FeatureLayer("https://services.arcgis.com/rQ4nYWw3vwjxcr1D/ArcGIS/rest/services/Crops/FeatureServer/0",{
+				mode: FeatureLayer.MODE_SNAPSHOT,
+				visible: true
+			});
+			
+			var ren = new SimpleRenderer(new SimpleLineSymbol(SimpleLineSymbol.STYLE_LONGDASHDOT, new Color([0,0,0]), 4));
+			admBound.setRenderer(ren);
+			
+			
+			map.addLayers([crop2013,crop2014,admBound]);
+			
+			var layerSwipe = new LayerSwipe({
+				type: "vertical",
+				left: 250,
+				map: map,
+				layers: [crop2014]
+			  }, "swipeDiv");
+			  
+			layerSwipe.startup();
+			
+			var legend = new Legend({
+				map: map,
+				layerInfos: [
+				{
+				  layer: crop2014,
+				  title: "Legend",
+				}
+				  ]}, "leg");
+
+			legend.startup();
+			
+			/////////////////Events
+			
+			cropFs2014.on("complete", function(results){
+				processResults(results, sum2014, "area2014");
+			});
+			cropFs2013.on("complete", function(results){
+				processResults(results, sum2013, "area2013");
+			});	
+			cropFs2012.on("complete", function(results){
+				processResults(results, sum2012, "area2012");
+			});				
+			
+			map.on("update-start", function () {
+			   	document.getElementById("status").style.visibility="visible";
+            });
+			
+            map.on("update-end", function () {
+			
+			map.on("click", function(e){
+				console.log("radius " + radius);
+				if (radius == true){
+					map.graphics.clear();
+					//console.log("here")
+					document.getElementById("status").style.visibility="visible";
+					var centerPt = e.mapPoint;
+					var geodesicBuff = geometryEngine.geodesicBuffer(centerPt, document.getElementById("radVal").value*1000,"meters");
+					var gr = new Graphic(geodesicBuff, buffSymFade);
+					//console.log(gr);
+					map.graphics.add(new Graphic(geodesicBuff, buffFade));
+					map.graphics.add(gr);
+					map.graphics.redraw();
+					//console.log("here1");
+					radius = false;
+					if (!checkGraphic(gr)){
+						
+						return;
+					};
+					
+					queryProcess(gr);
+					
+					
+
+					
+					
+					
+	
+				}
+			
+			
+			
+			});
+			
+			
+				document.getElementById("status").style.visibility="hidden";
+				//navigator.geolocation.getCurrentPosition(showPosition, posError);
+				
+				
+			
+					
+				 
+            });
+			
+			layerSwipe.startup();
+			
+			
+			layerSwipe.on("load", function(){
+				
+				var x = document.getElementsByClassName("handle")[0].innerHTML="Year </br> 2013 | 2014";
+					//console.log("layerSwipe " + layerSwipe);
+				
+
+			
+			});
+			
+			
+			//on(dom.byId("crop2014"), "click", crop);
+			//on(dom.byId("nearPoi"), "click", showNear);
+	
+			$("#compareButton").click(showCompare);
+			$("#showLegend").click(showLeg);
+			
+			$("#radiusExtent").on('click' , function(e){
+				$("#buffer").modal("show");
+				iter=0;
+			});
+			$("#currentExtent").on('click' , function(e){
+				chooseExtent("current");
+				iter=0;
+			});
+			
+			$("#btnCommit").on('click' , function(e){
+				chooseExtent("radius");
+			});
+			
+			//on(dom.byId("btnCommit"), "click", chooseExtent("radius"));
+								
+			function showCompare(){
+					$("#menu-close").click();
+					layerSwipe.disable();
+					if (document.getElementById("info").style.visibility=="hidden"){
+							//console.log("ok")
+							document.getElementById("info").style.visibility="visible"
+					} else {
+							document.getElementById("info").style.visibility="hidden"
+					}
+
+			}
+			
+			function showLeg(){
+					$("#menu-close").click();
+					if (document.getElementById("legend").style.visibility=="hidden"){
+							document.getElementById("legend").style.visibility="visible"
+					} else {
+							document.getElementById("legend").style.visibility="hidden"
+					}
+
+			}
+			
+			
+
+			function chooseExtent (value){
+				
+				console.log("RadiusExtent " + value);
+				sum2014 = [];
+				sum2013 = [];
+				sum2012 = [];
+				listCropTypes = [];
+
+				if (value == 'radius'){
+					radius = true;
+				}
+				
+				else {
+					radius = false;
+					createExtent();
+				}
+			}
+			
+
+			
+			function createExtent(){
+				document.getElementById("status").style.visibility="visible";
+				map.graphics.clear();
+				gr = new Graphic(map.extent, buffSymFade);
+				map.graphics.add(new Graphic(map.extent, buffFade));
+				map.graphics.add(gr);
+				if (!checkGraphic(gr)){
+						return;
+					};
+					
+				queryProcess(gr);
+			
+			}
+			
+			
+			function checkGraphic(gr){
+				
+				var overlaps = geometryEngine.intersect(admBound.graphics[0].geometry, gr.geometry);
+				if(overlaps){
+					console.log("Overlaps Moultrie!!");
+					return true;
+				} else {
+					alert("Geometry is completely outside Moultrie!")
+					console.log("Outside Moultrie!!");    
+					return false;
+				
+				}
+	
+			}
+			
+			
+			
+			function queryProcess(gr){
+
+				queryCrops(gr, cropFs2014);
+				queryCrops(gr, cropFs2013);
+				queryCrops(gr, cropFs2012);
+			
+			}
+			
+			function queryCrops(gr, cropYear){
+				var resultItems = [];
+				var query = new Query();
+					query.geometry = gr.geometry;
+					query.returnGeometry = false;
+					query.outFields = ["Name", "Area"]
+					query.groupByFieldsForStatistics = ["Name"];
+				
+				var statisticDefinition = new StatisticDefinition();
+					statisticDefinition.statisticType = "sum";
+					statisticDefinition.onStatisticField = "Area";
+					statisticDefinition.outStatisticFieldName = "TotalArea";
+				query.outStatistics = [statisticDefinition];
+				query.orderByFields = ["Name"];
+				cropYear.execute(query);
+			
+			
+			}
+			
+			function processResults(results, year, area){
+				iter = iter +1;
+				console.log(results)
+				console.log(iter)
+				areaCalc=0;
+				for (var i = 0; i < results.featureSet.features.length; i++){
+					year.push(results.featureSet.features[i]);
+					//console.log(results.featureSet.features[i].attributes.TotalArea)
+					areaCalc=areaCalc + results.featureSet.features[i].attributes.TotalArea;
+					//console.log(areaCalc);
+					var found = false;
+					for (var ii = 0; ii < listCropTypes.length; ii++){
+						if(results.featureSet.features[i].attributes.Name == listCropTypes[ii]){
+							found = true;
+						}
+						
+					}
+					
+					if (!found){
+						listCropTypes.push(results.featureSet.features[i].attributes.Name);
+					}
+						
+				}
+				
+				if (area == "area2014"){
+					area2014 = areaCalc;
+				} else if (area == "area2013"){
+					area2013 = areaCalc;
+				} else if (area == "area2012"){
+					area2012 = areaCalc;
+				}
+				
+				if (iter == 3){
+					console.log("iter 3")
+					createChart();
+				
+				}
+			}
+			
+			
+			function createChart(){
+				var data2014 = [];
+				var data2013 = [];
+				var data2012 = [];
+
+				for (i=0; i <listCropTypes.length; i++ ){
+					var found = false;
+					for (ii=0; ii <sum2014.length; ii++){
+						if (sum2014[ii].attributes.Name == listCropTypes[i]) {
+							data2014.push((sum2014[ii].attributes.TotalArea/area2014)*100);
+							found = true;
+						}
+					
+					}
+					
+					if (!found) {
+					
+						data2014.push(0);
+					
+					}
+				
+				}
+				
+				
+			
+			console.log(data2014);
+				for (i=0; i <listCropTypes.length; i++ ){
+					var found = false;
+					console.log("createChart 3")
+					for (ii=0; ii <sum2013.length; ii++){
+						if (sum2013[ii].attributes.Name == listCropTypes[i]) {
+							data2013.push((sum2013[ii].attributes.TotalArea/area2013)*100);
+							found = true;
+						}
+					
+					}
+					
+					if (!found) {
+					
+						data2013.push(0);
+					
+					}
+				
+				}
+			
+			console.log(data2013);
+			
+					
+				for (i=0; i <listCropTypes.length; i++ ){
+					var found = false;
+					console.log("createChart 3")
+					for (ii=0; ii <sum2012.length; ii++){
+						if (sum2012[ii].attributes.Name == listCropTypes[i]) {
+							data2012.push((sum2012[ii].attributes.TotalArea/area2012)*100);
+							found = true;
+						}
+					
+					}
+					
+					if (!found) {
+					
+						data2012.push(0);
+					
+					}
+				
+				}
+			
+			console.log(data2012);
+			
+			var barChartData = {
+				labels : listCropTypes,
+				datasets : [
+					{
+						fillColor : "rgba(80,171,192,0.6)",
+						strokeColor : "rgba(80,171,192,0.8)",
+						highlightFill: "rgba(80,171,192,0.1)",
+						highlightStroke: "rgba(80,171,192,1)",
+						data : data2014,
+						label : "2014"
+					},
+					{
+						fillColor : "rgba(248,153,39,0.6)",
+						strokeColor : "rgba(248,153,39,0.8)",
+						highlightFill : "rgba(248,153,39,0.1)",
+						highlightStroke : "rgba(248,153,39,1)",
+						data : data2013,
+						label : "2013"
+					},
+					{
+						fillColor : "rgba(220,220,220,0.6)",
+						strokeColor : "rgba(220,220,220,0.8)",
+						highlightFill: "rgba(220,220,220,0.1)",
+						highlightStroke: "rgba(220,220,220,1)",
+						data : data2012,
+						label : "2012"
+					}
+					
+				]
+
+			}	
+				if (chartD){
+					barChart.destroy();
+				}
+				var ctx = document.getElementById("chart").getContext("2d");
+				barChart = new Chart(ctx).Bar(barChartData, {
+					responsive : true
+					
+					
+				});
+				chartD = true;
+				
+				//console.log(barChart);
+
+				
+
+			
+			
+			
+			//dom.byId("chartBody").innerHTML="Information"
+			document.getElementById("status").style.visibility="hidden"
+			document.getElementById("con").style.visibility="visible"
+			document.getElementById("comLeg").style.visibility="visible"
+
+			
+			
+			//$("#showChart").modal("show");
+			}
+		
+		
+
+			
+		});
+    </script>
+ 
+
+</body>
+
+</html>
