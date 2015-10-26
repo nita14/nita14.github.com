@@ -86,7 +86,6 @@
 
 #info {
         width: 20%;
-		height: 70%;
         background-color: rgba(0,0,0,0.9);
         color: #fff;
 		position: absolute;
@@ -107,7 +106,6 @@
 
 #legend {
         width: 11%;
-		height: 76%;
         background-color: rgba(0,0,0,0.9);
         color: #fff;
 		position: absolute;

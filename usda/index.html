@@ -25,10 +25,8 @@
 	<link href="css/cur.css" rel="stylesheet">
 
 </head>
-
 <body>
-
-    <!-- Navigation -->
+    <!-- Nav -->
     <a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="fa fa-bars"></i></a>
     <nav id="sidebar-wrapper">
         <ul class="sidebar-nav">
@@ -37,21 +35,28 @@
                 <a onclick = $("#menu-close").click(); >Moultrie</a>
             </li>
             <li>
-                <a id="compareButton">Compare Yields</a>
-            </li>
-			<li>
-                <a id="nearPoi">Search for the nearest...</a>
+                <a id="compareButton">Compare crops</a>
             </li>
             <li>
                 <a id="showLegend">Show legend</a>
             </li>
         </ul>
     </nav>
-	<!-- Load to routing results -->
-
-
-
-	<!--notifications-->
+	<!-- Intro -->
+	<div class="modal fade bs-example-modal-sm" id="intro" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+			<div class="modal-header" id="header">
+				<h4 class="modal-title" id="title" style="text-align:center;"><b>Moultrie App</b></h4>
+			</div>
+            <div class="modal-body" id="geolok" style="text-align: center">
+                 Check the crops in 2014. Compare them visually with those from 2013. Make a chart of percentage of crop types in specified area from 2012 to 2014.</br></br>
+				<button id="btnCommit" type="button" style="align:center" class="btn btn-primary btn-block" data-dismiss="modal">Ok, start explore!</button>
+            </div>
+            </div>
+        </div><
+    </div>
+	<!--radius-->
 	<div class="modal fade bs-example-modal-sm" id="buffer" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -67,7 +72,21 @@
             </div>
         </div><
     </div>
-
+	<!--extent-->
+	<div class="modal fade bs-example-modal-sm" id="extent" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+			<div class="modal-header" id="header">
+				<h4 class="modal-title" id="title" style="text-align:center;"><b>Extent</b></h4>
+			</div>
+            <div class="modal-body" id="geolok" style="text-align: center">
+                 Specify input area as a current visible area. </br></br>
+				<button id="btnCommitEx" type="button" style="align:center" class="btn btn-primary btn-block" data-dismiss="modal">Ok, ready to go!</button>
+            </div>
+            </div>
+        </div><
+    </div>
+	
 	<div id="mapDiv">
         <div id="status" style="position: absolute; top: 50%; left: 50%; visibility:visible; z-index:6">
                   <img src="img/loading.gif"/></br>
@@ -90,22 +109,11 @@
 			<div style="width: 95%; height: 55%;" id="con">
 				<canvas id="chart" height="200" width="300"></canvas>
 			</div>
-						
-			
-			
 		</div>
 		<div id="legend" style="visibility: hidden;">
 			<div id="leg"></div>
 		</div>
-
-		
-		
-		
-	
     </div>
-	
-
-
     <!-- Custom Theme JavaScript -->
 	<script src="js/jquery.js"></script>
 	<script src="js/bootstrap.min.js"></script>
@@ -122,11 +130,6 @@
         e.preventDefault();
         $("#sidebar-wrapper").toggleClass("active");
     });
-	
-
-	
-
-
     </script>
 	<script type="text/javascript">
 		var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
@@ -147,9 +150,7 @@
 		var iter = 0;
 		var area2014 = 0; var area2013 = 0; var area2012 = 0;
 		var chartD = false;
-		
-		
-		
+
         require(["esri/map", "esri/layers/FeatureLayer",  "esri/layers/ArcGISTiledMapServiceLayer",
 		"esri/dijit/Scalebar", "./chart/Chart.js",
 		"application/bootstrapmap", "esri/domUtils",
@@ -188,7 +189,7 @@
 			var buffFade = new SimpleFillSymbol(SimpleFillSymbol.STYLE_NULL, 
 				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 255, 255]), 5), null);
 			var buffSymFade = new SimpleFillSymbol(SimpleFillSymbol.STYLE_NULL, 
-				new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASH, new Color([255, 130, 0]), 2), null);
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASH, new Color([255, 0, 0]), 2), null);
 
 			var cropFs2014 = new QueryTask("https://services.arcgis.com/rQ4nYWw3vwjxcr1D/ArcGIS/rest/services/Crops/FeatureServer/1");
 			var cropFs2013 = new QueryTask("https://services.arcgis.com/rQ4nYWw3vwjxcr1D/ArcGIS/rest/services/Crops/FeatureServer/2"); 
@@ -223,7 +224,7 @@
 			
 			var layerSwipe = new LayerSwipe({
 				type: "vertical",
-				left: 250,
+				left: 280,
 				map: map,
 				layers: [crop2014]
 			  }, "swipeDiv");
@@ -240,8 +241,6 @@
 				  ]}, "leg");
 
 			legend.startup();
-			
-			/////////////////Events
 			
 			cropFs2014.on("complete", function(results){
 				processResults(results, sum2014, "area2014");
@@ -263,16 +262,14 @@
 				console.log("radius " + radius);
 				if (radius == true){
 					map.graphics.clear();
-					//console.log("here")
 					document.getElementById("status").style.visibility="visible";
 					var centerPt = e.mapPoint;
 					var geodesicBuff = geometryEngine.geodesicBuffer(centerPt, document.getElementById("radVal").value*1000,"meters");
 					var gr = new Graphic(geodesicBuff, buffSymFade);
-					//console.log(gr);
 					map.graphics.add(new Graphic(geodesicBuff, buffFade));
 					map.graphics.add(gr);
 					map.graphics.redraw();
-					//console.log("here1");
+
 					radius = false;
 					if (!checkGraphic(gr)){
 						
@@ -280,44 +277,20 @@
 					};
 					
 					queryProcess(gr);
-					
-					
-
-					
-					
-					
-	
 				}
-			
-			
-			
 			});
-			
-			
+
 				document.getElementById("status").style.visibility="hidden";
-				//navigator.geolocation.getCurrentPosition(showPosition, posError);
-				
-				
-			
-					
-				 
+	 
             });
 			
-			layerSwipe.startup();
-			
-			
+			$("#intro").modal("show")
+			layerSwipe.startup();	
 			layerSwipe.on("load", function(){
-				
 				var x = document.getElementsByClassName("handle")[0].innerHTML="Year </br> 2013 | 2014";
-					//console.log("layerSwipe " + layerSwipe);
-				
 
-			
 			});
 			
-			
-			//on(dom.byId("crop2014"), "click", crop);
-			//on(dom.byId("nearPoi"), "click", showNear);
 	
 			$("#compareButton").click(showCompare);
 			$("#showLegend").click(showLeg);
@@ -327,7 +300,7 @@
 				iter=0;
 			});
 			$("#currentExtent").on('click' , function(e){
-				chooseExtent("current");
+				$("#extent").modal("show");
 				iter=0;
 			});
 			
@@ -335,13 +308,15 @@
 				chooseExtent("radius");
 			});
 			
-			//on(dom.byId("btnCommit"), "click", chooseExtent("radius"));
+			$("#btnCommitEx").on('click' , function(e){
+				chooseExtent("current");
+			});
+
 								
 			function showCompare(){
 					$("#menu-close").click();
 					layerSwipe.disable();
 					if (document.getElementById("info").style.visibility=="hidden"){
-							//console.log("ok")
 							document.getElementById("info").style.visibility="visible"
 					} else {
 							document.getElementById("info").style.visibility="hidden"
@@ -359,11 +334,8 @@
 
 			}
 			
-			
-
 			function chooseExtent (value){
 				
-				console.log("RadiusExtent " + value);
 				sum2014 = [];
 				sum2013 = [];
 				sum2012 = [];
@@ -378,15 +350,15 @@
 					createExtent();
 				}
 			}
-			
 
-			
 			function createExtent(){
 				document.getElementById("status").style.visibility="visible";
 				map.graphics.clear();
 				gr = new Graphic(map.extent, buffSymFade);
 				map.graphics.add(new Graphic(map.extent, buffFade));
 				map.graphics.add(gr);
+
+				map.setZoom(map.getZoom()-1);
 				if (!checkGraphic(gr)){
 						return;
 					};
@@ -410,8 +382,7 @@
 				}
 	
 			}
-			
-			
+
 			
 			function queryProcess(gr){
 
@@ -442,14 +413,10 @@
 			
 			function processResults(results, year, area){
 				iter = iter +1;
-				console.log(results)
-				console.log(iter)
 				areaCalc=0;
 				for (var i = 0; i < results.featureSet.features.length; i++){
 					year.push(results.featureSet.features[i]);
-					//console.log(results.featureSet.features[i].attributes.TotalArea)
 					areaCalc=areaCalc + results.featureSet.features[i].attributes.TotalArea;
-					//console.log(areaCalc);
 					var found = false;
 					for (var ii = 0; ii < listCropTypes.length; ii++){
 						if(results.featureSet.features[i].attributes.Name == listCropTypes[ii]){
@@ -473,7 +440,6 @@
 				}
 				
 				if (iter == 3){
-					console.log("iter 3")
 					createChart();
 				
 				}
@@ -503,12 +469,9 @@
 				
 				}
 				
-				
-			
-			console.log(data2014);
+
 				for (i=0; i <listCropTypes.length; i++ ){
 					var found = false;
-					console.log("createChart 3")
 					for (ii=0; ii <sum2013.length; ii++){
 						if (sum2013[ii].attributes.Name == listCropTypes[i]) {
 							data2013.push((sum2013[ii].attributes.TotalArea/area2013)*100);
@@ -524,13 +487,9 @@
 					}
 				
 				}
-			
-			console.log(data2013);
-			
-					
+	
 				for (i=0; i <listCropTypes.length; i++ ){
 					var found = false;
-					console.log("createChart 3")
 					for (ii=0; ii <sum2012.length; ii++){
 						if (sum2012[ii].attributes.Name == listCropTypes[i]) {
 							data2012.push((sum2012[ii].attributes.TotalArea/area2012)*100);
@@ -547,7 +506,6 @@
 				
 				}
 			
-			console.log(data2012);
 			
 			var barChartData = {
 				labels : listCropTypes,
@@ -591,25 +549,11 @@
 				});
 				chartD = true;
 				
-				//console.log(barChart);
-
-				
-
-			
-			
-			
-			//dom.byId("chartBody").innerHTML="Information"
 			document.getElementById("status").style.visibility="hidden"
 			document.getElementById("con").style.visibility="visible"
 			document.getElementById("comLeg").style.visibility="visible"
 
-			
-			
-			//$("#showChart").modal("show");
 			}
-		
-		
-
 			
 		});
     </script>
