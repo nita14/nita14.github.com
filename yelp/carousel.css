@@ -5,6 +5,7 @@ html,body{
 }
 
 
+
 .navbar-wrapper {
   position: absolute;
   top: 0;
@@ -31,10 +32,6 @@ html,body{
 .fill{width:100%;height:100%;background-position:center;background-size:cover;}
 
 
-img {
-    opacity: 0.8;
-    filter: alpha(opacity=80); 
-}
 
 .carousel-caption {
   z-index: 10;
@@ -43,12 +40,18 @@ img {
 .carousel .item {
   background-color: #777;
 }
-.carousel-inner > .item > img {
+#yelp_img {
   position: absolute;
   top: 0;
   left: 0;
   min-width: 100%;
 }
+
+#yelp_pow {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+	}
 
 
 @media (min-width: 768px) {
@@ -76,6 +79,8 @@ img {
     font-size: 21px;
     line-height: 1.4;
   }
+  
+
 
 }
 

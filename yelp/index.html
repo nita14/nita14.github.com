@@ -6,41 +6,804 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Yelp</title>
+    <title>My place</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://js.arcgis.com/3.16/esri/css/esri.css">   
+    <link rel="stylesheet" type="text/css" href="bootstrapmap/src/css/bootstrapmap.css">   
     <link href="carousel.css" rel="stylesheet">
+	<link href="mapa.css" rel="stylesheet">
+	    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
   </head>
+
   <body>
-    <div class="navbar-wrapper">
-      <div class="container">
-        <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="fa fa-bars"></i></a>
+    <nav id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="fa fa-times"></i></a>
+            <li class="sidebar-brand">
+                <a href="#myCarousel"  onclick = $("#menu-close").click(); ><img class="navbar-brand-image" src="images/logoWh.png">&nbsp; Find my place</a>
+            </li>
+			<li>
+                <a href="#myCarousel" onclick = $("#menu-close").click(); >Form</a>
+            </li>
+            <li>
+                <a href="#mapDiv" onclick = $("#menu-close").click(); >Map</a>
+            </li>
+            <li>
+                <a href="#contact" onclick = $("#menu-close").click(); >Resources</a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div id="myCarousel" class="carousel slide">
+      <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+		<li data-target="#myCarousel" data-slide-to="3"></li>
+      </ol>
+      <div class="carousel-inner">
+        <div class="item active">
+			<img src="images/dom.jpg" id="yelp_img" alt="powered by Yelp">
+		    <img src="images/yelp_pow.png" id="yelp_pow" align ="bottom" alt="powered by Yelp">
+		  
           <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="index.html"><img class="navbar-brand-image" >App is under construction!</a>
+            <div class="carousel-caption">
+              <h1>Are you looking for a perfect place for living in a new neighbourhood?</h1>
+              <p>We can help you find the best area to live. Just fill in the simple form!</p>
+              <p><a class="btn btn-lg btn-primary"  id ="next" role="button">Yes, I want do this!</a></p>
             </div>
-            <div class="navbar-collapse collapse">
-              <ul class="nav navbar-nav">
-               
-              </ul>
+			
+          </div>
+        </div>
+		<div class="item" >
+		  <img src="images/praca.jpg" id="yelp_img" alt="powered by Yelp">
+		  <img src="images/yelp_pow.png" id="yelp_pow" align ="bottom" alt="powered by Yelp">
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>Where do you work?</h1>
+              <p>Set it's place using</p>
+			  
+			    <div style="text-align: center">
+					<p><a class="btn btn-info btn-primary" id="locateH5" role="button">my device position (GPS)</a></p>
+					<p>Then, choose maximum travel time to work in minutes</p>
+					<p><div class="btn-group btn-group-lg" role="group" aria-label="...">
+						<button type="button" id="m5" class="btn btn-warning">5</button>
+						<button type="button" id="m10" class="btn btn-warning">10</button>
+						<button type="button" id="m20" class="btn btn-warning">20</button>
+						<button type="button" id="m30" class="btn btn-warning">30</button>
+						<button type="button" id="m40" class="btn btn-warning">40</button>
+						<button type="button" id="m50" class="btn btn-warning">50</button>
+					</div></p>
+
+				</div>
+              <p><a class="btn btn-lg btn-primary" id="driveButton" role="button">Create drive Time!</a></p>
             </div>
           </div>
         </div>
-
+        <div class="item">
+		  <img src="images/free_time.jpg" id="yelp_img" alt="powered by Yelp">
+		  <img src="images/yelp_pow.png" id="yelp_pow" align ="bottom" alt="powered by Yelp">
+          <div class="container">
+            <div class="carousel-caption" ng-app="ang" ng-controller="mainCtrl">
+              <h1>Search for your favourite places</h1>
+			  <p><input id="yelpCont" type="text" style="color:black;font-size:22px" size="25" placeholder="Fitness, kawa, sushi..."/></p>
+			  <p>and specify the maximum walking time to it</p>
+			  <p><div class="btn-group btn-group-lg" role="group" aria-label="...">
+						<button type="button" id="c5" class="btn btn-warning">5</button>
+						<button type="button" id="c10" class="btn btn-warning">10</button>
+						<button type="button" id="c15" class="btn btn-warning">15</button>
+						<button type="button" id="c20" class="btn btn-warning">20</button>
+						<button type="button" id="c30" class="btn btn-warning">30</button>
+					</div></p>
+              <p><a class="btn btn-lg btn-primary" id="yelpButtonNext" ng-click="search()" role="button">Ask Yelp!</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+		<img src="images/zielen2.jpg" id="yelp_img" alt="powered by Yelp">
+		<img src="images/yelp_pow.png" id="yelp_pow" align ="bottom" alt="powered by Yelp">
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>How close to transportation and greenery?</h1>
+			  <p><div id="parkMetroCon" style="font-size:22px">Specify the walking time to the nearest park</div></p>
+			  <p><div class="btn-group btn-group-lg" role="group" aria-label="...">
+						<button type="button" id="p5" class="btn btn-warning">5</button>
+						<button type="button" id="p10" class="btn btn-warning">10</button>
+						<button type="button" id="p15" class="btn btn-warning">15</button>
+						<button type="button" id="p20" class="btn btn-warning">20</button>
+						<button type="button" id="p30" class="btn btn-warning">30</button>
+					</div></p>
+			  <p><div id="MetroCon" style="font-size:22px">and to the subway station</div></p>
+			  <p><div class="btn-group btn-group-lg" role="group" aria-label="...">
+						<button type="button" id="m5" class="btn btn-warning">5</button>
+						<button type="button" id="m10" class="btn btn-warning">10</button>
+						<button type="button" id="m15" class="btn btn-warning">15</button>
+						<button type="button" id="m20" class="btn btn-warning">20</button>
+						<button type="button" id="m30" class="btn btn-warning">30</button>
+					</div></p>
+			  <p><a class="btn btn-lg btn-primary" id="bufferparks"ng-click="buffer parks" role="button">Find the results!</a></p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+	<div id="mapDiv">
+
+				
 
     </div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+	
+	<div id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Resources</h2>
+                    <ul class="list-unstyled">
+						<li>Yelp Developers API</li>
+						<li>Esri JavaScript API 3.16 and 4.0 beta1</li>
+						<li>Bootstrap and jQuery</li>
+                        <li>Angular JS</li>
+						<li>Glyphicons</li>
+						<li>Esri map, feature and analytics services</li>
+                    </ul>
+                    <br><br>
+					<h4>Contact</h4>
+                     <ul class="list-unstyled">
+                        <li><i class="fa fa-envelope-o fa-fw"></i>  <a href="mailto:adamnicinski@hotmail.com">adamnicinski@hotmail.com</a></li>
+						</br>
+						<li><i>The purpose of this application is to increase understanding of the spatial analysis. This application can be used for demonstration purposes only.</i></li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+	</div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="bootstrap/js/docs.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			// Activate Carousel
+			$("#myCarousel").carousel("pause");
+			
+			$("#next").click(function(){
+				$("#myCarousel").carousel("next");
+			});
+			
+			$("#driveButton").click(function(){
+				$("#myCarousel").carousel("next");
+			});
+			
+			$("#yelpButtonNext").click(function(){
+				$("#myCarousel").carousel("next");
+			});
+			
+			
+		});
+		
+		$("#menu-close").click(function(e) {
+			e.preventDefault();
+			$("#sidebar-wrapper").toggleClass("active");
+		});
+
+		$("#menu-toggle").click(function(e) {
+			e.preventDefault();
+			$("#sidebar-wrapper").toggleClass("active");
+		});
+		
+		timeTravel = 5;
+		timeWalk = 5;
+		timeWalkP = 5;
+		timeWalkM = 5;
+		
+		
+		$("#m5").click(function(e){
+			timeTravel = 5;
+			e.preventDefault();
+		});
+		$("#m10").click(function(e){
+			timeTravel = 10;
+			e.preventDefault();
+		});
+		$("#m20").click(function(e){
+			timeTravel = 20;
+			e.preventDefault();
+		});
+		$("#m30").click(function(e){
+			timeTravel = 30;
+			e.preventDefault();
+		});
+		$("#m40").click(function(e){
+			timeTravel = 40;
+			e.preventDefault();
+		});
+		$("#m50").click(function(e){
+			timeTravel = 50;
+			e.preventDefault();
+		});
+		
+		$("#c5").click(function(e){
+			timeWalk = 5;
+			e.preventDefault();
+		});
+		$("#c10").click(function(e){
+			timeWalk = 10;
+			e.preventDefault();
+		});
+		$("#c15").click(function(e){
+			timeWalk = 15;
+			e.preventDefault();
+		});
+		$("#c20").click(function(e){
+			timeWalk = 20;
+			e.preventDefault();
+		});
+		$("#c25").click(function(e){
+			timeWalk = 25;
+			e.preventDefault();
+		});
+		$("#c30").click(function(e){
+			timeWalk = 30;
+			e.preventDefault();
+		});
+		
+		$("#p5").click(function(e){
+			timeWalkP = 5;
+			e.preventDefault();
+		});
+		$("#p10").click(function(e){
+			timeWalkP = 10;
+			e.preventDefault();
+		});
+		$("#p15").click(function(e){
+			timeWalkP = 15;
+			e.preventDefault();
+		});
+		$("#p20").click(function(e){
+			timeWalkP = 20;
+			e.preventDefault();
+		});
+		$("#p25").click(function(e){
+			timeWalkP = 25;
+			e.preventDefault();
+		});
+		$("#p30").click(function(e){
+			timeWalkP = 30;
+			e.preventDefault();
+		});
+		
+				
+		$("#m5").click(function(e){
+			timeWalkM = 5;
+			e.preventDefault();
+		});
+		$("#m10").click(function(e){
+			timeWalkM = 10;
+			e.preventDefault();
+		});
+		$("#m15").click(function(e){
+			timeWalkM = 15;
+			e.preventDefault();
+		});
+		$("#m20").click(function(e){
+			timeWalkM = 20;
+			e.preventDefault();
+		});
+		$("#m25").click(function(e){
+			timeWalkM = 25;
+			e.preventDefault();
+		});
+		$("#m30").click(function(e){
+			timeWalkM = 30;
+			e.preventDefault();
+		});
+
+
+		$(function() {
+			$('a[href*=#]:not([href=#])').click(function() {
+				if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') || location.hostname == this.hostname) {
+
+					var target = $(this.hash);
+					target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+					if (target.length) {
+						$('html,body').animate({
+							scrollTop: target.offset().top
+						}, 1000);
+						return false;
+					}
+				}
+			});
+		});
+		
+		var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+		var dojoConfig = {
+
+			  packages: [{
+				  name: "application",
+				  location: package_path + '/bootstrapmap/src/js'
+			  }]
+		  };
+		</script>
+
+    <script src="https://js.arcgis.com/3.16/"></script>
+	<script src="http://oauth.googlecode.com/svn/code/javascript/oauth.js"></script>
+	<script src="http://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>
+	<script>
+	
+	var app = angular.module('ang', []);
+		
+	app.controller('mainCtrl', function($scope, $http) {
+		
+			var results;
+			var response = false;
+			
+			////console.log("yelp  " + makeYelpRequest())
+			//var url = makeYelpRequest();
+			
+			$scope.search = function() {
+				//console.log("here")
+				//console.log(angular.element('#yelpCont').val())
+				//console.log(map.graphics.graphics[0].attributes)
+				var url = makeYelpRequest(angular.element('#yelpCont').val(), map.graphics.graphics[0].attributes);
+				$http.jsonp(url)
+					.success(function(data){
+						results = data;
+						//console.log("data") 
+						//console.log(data)
+						response = true;
+				});
+			
+			}
+			
+			function makeYelpRequest(term, near){
+
+				 var auth = { 
+					consumerKey: "BSCzetEY7GEXHHYVgyYX_A", 
+					consumerSecret: "WRkt--jR2a-UD2xA9Y40T2nCheU",
+					accessToken: "-E51h2P_S2wjwoZ3K8q43iMtUUUJLN0m",
+					accessTokenSecret: "UTbfUh8MqymY5DJTGIa6aGDINb8"
+					}
+				  //var terms = 'fitness';
+				  //var near = 'Warszawa';
+
+				  var accessor = {
+					consumerSecret: auth.consumerSecret,
+					tokenSecret: auth.accessTokenSecret
+				  };
+				
+				  var n = Math.floor(Math.random() * 1e9);
+				  var parameters = [];
+				  //parameters.push(['offset', 200]);
+				  parameters.push(['location', near]);
+				  parameters.push(['radius_filter', 30000]);
+				  parameters.push(['callback', 'angular.callbacks._0']);
+				  parameters.push(['oauth_consumer_key', auth.consumerKey]);
+				  parameters.push(['oauth_token', auth.accessToken]);
+				  parameters.push(['term', term]);
+				  
+
+				  var message = { 
+					'action': 'http://api.yelp.com/v2/search',
+					'method': 'GET',
+					'parameters': parameters 
+				  };
+
+				  OAuth.setTimestampAndNonce(message);  
+
+				  OAuth.SignatureMethod.sign(message, accessor);
+
+				  var parameterMap = OAuth.getParameterMap(message.parameters);
+				  parameterMap.oauth_signature = OAuth.percentEncode(parameterMap.oauth_signature)
+
+				  var url = OAuth.addToURL(message.action,parameterMap);
+				  
+				  return url;
+					
+			}
+							
+	 require(["esri/map", "esri/dijit/Popup", "esri/dijit/PopupTemplate",
+		"esri/layers/FeatureLayer", "esri/tasks/FeatureSet", "esri/geometry/Point", "esri/graphicsUtils", "esri/graphic", "esri/layers/GraphicsLayer",
+		"esri/tasks/ServiceAreaTask", "esri/tasks/ServiceAreaParameters", "esri/geometry/geometryEngine", "esri/tasks/locator",
+		"esri/SpatialReference", "esri/geometry/webMercatorUtils", "esri/config",
+		"esri/symbols/SimpleMarkerSymbol","esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/Color", "esri/symbols/PictureMarkerSymbol",
+		"esri/symbols/TextSymbol", "esri/symbols/Font", "esri/renderers/SimpleRenderer",
+		"dojo/number", "esri/urlUtils",
+		"application/bootstrapmap", "application/auth",
+		"dojo/dom-class", "dojo/dom-construct", "dojo/on", "dojo/dom", "dojo/_base/array",
+		"dojo/domReady!"],
+		
+        function(Map, Popup, PopupTemplate,
+		FeatureLayer, FeatureSet, Point, graphicsUtils, Graphic, GraphicsLayer,
+		ServiceAreaTask, ServiceAreaParameters, geometryEngine, Locator,
+		SpatialReference, webMercatorUtils, esriConfig,
+		SimpleMarkerSymbol,SimpleFillSymbol, SimpleLineSymbol, Color, PictureMarkerSymbol,
+		TextSymbol, Font, SimpleRenderer,
+		number, urlUtils,
+		BootstrapMap, auth,
+		domClass, domConstruct, on, dom, array
+		) {
+			
+			var locator = new Locator("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
+			
+            map = BootstrapMap.create("mapDiv", { 	
+              basemap: "dark-gray",   					
+              center: [20.995, 52.236], 
+			  scrollWheelZoom: true,			  
+              zoom: 14 
+              });					
+					
+			var oknoPod = new Popup({				
+					titleInBody: false					
+				}, domConstruct.create("div"));			
+				
+			map.infoWindow= oknoPod;					
+			
+			var szablonMiesz = new PopupTemplate({			
+				  title: "Property - {Nazwa}",				
+				  description: "Details are {Opis} More info at {Kontakt}" 				
+				});
+
+			var szablonParki = new PopupTemplate({			
+				  title: "Park",				
+				  description: "The park name is {Nazwa}" 				
+				});
+				
+			var szablonMetro = new PopupTemplate({			
+				  title: "Subway",				
+				  description: "{Nazwa} - station" 				
+				});
+			
+			var szablonPraca = new PopupTemplate({			
+				  title: "Workplace",				
+				  description: "This is a place where you work." 				
+				});
+			
+			var szablonYelp = new PopupTemplate({			
+				  title: "Yelp",				
+				  description: "This is <b>{name}</b> of average rating {rating}. More info at {phone}." 				
+				});
+				
+
+			var parkLyr = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/TerenyZieloneWawa/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["*"],
+				opacity: 0.5,				
+				infoTemplate: szablonParki				
+			});
+			
+			
+			var metroLyr = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/StacjeMetraWawa/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["*"],		
+				infoTemplate: szablonMetro				
+			});
+			
+			var mieszLyr = new FeatureLayer(				
+			"http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/OfertyMieszkan/FeatureServer/0", { 
+				mode: FeatureLayer.MODE_SNAPSHOT,		
+				outFields: ["*"],	
+				opacity: 0,	
+				infoTemplate: szablonMiesz				
+			});
+			
+			//var metSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 16, null, new Color([255,255,0,0.60])
+			///	);  
+			var metRenderer = new SimpleRenderer(new PictureMarkerSymbol("images/train.png", 18, 18));
+			metroLyr.setRenderer(metRenderer);
+			
+			var driveTimeLyr = new GraphicsLayer({
+				"id": "driveTimeLyr"
+			});
+			
+			var parksGrLyr = new GraphicsLayer({
+				"id": "parksGrLyr"
+			});
+			
+			var parksGrLyrBuf = new GraphicsLayer({
+				"id": "parksGrLyrBuf"
+			});
+			
+			var metroGrLyrBuf = new GraphicsLayer({
+				"id": "metroGrLyrBuf"
+			});
+			
+			var yelpGrLyr = new GraphicsLayer({
+				infoTemplate: szablonYelp,
+				"id": "yelpGrLyr"
+			});
+			
+			var yelpGrLyrBuf = new GraphicsLayer({
+				"id": "yelpGrLyrBuf"
+			});
+			
+			var inter1 = new GraphicsLayer({
+				opacity: 0,
+				"id": "inter1"
+			});
+			
+			var inter2 = new GraphicsLayer({
+				opacity: 0,
+				"id": "inter2"
+			});
+			
+			var inter3 = new GraphicsLayer({
+				"id": "inter3"
+			});
+			
+			
+			var res = new GraphicsLayer({
+				"id": "res"
+			});
+			
+			map.addLayers([parkLyr,metroLyr,driveTimeLyr,parksGrLyr,yelpGrLyr, yelpGrLyrBuf, parksGrLyrBuf, metroGrLyrBuf, inter1, inter2, inter3, mieszLyr, res]); 	
+			
+			map.on("layers-add-result", function () {
+				 map.graphics.setInfoTemplate(szablonPraca);
+			});
+
+			
+			$("#locateH5").click(locateH5Fun);
+			$("#driveButton").click(calculateDriveTime);
+			$("#bufferparks").click(intersect);
+			
+			
+			var sym = new PictureMarkerSymbol("images/work.png", 18, 18);
+			var symYelp = new PictureMarkerSymbol("images/yelpSym.png", 18, 18);
+			
+			
+			function locateH5Fun(){	
+				navigator.geolocation.getCurrentPosition(showPosition, posError);	
+			}
+			
+			function showPosition(position) {
+				myLoc = new Point(position.coords.longitude,position.coords.latitude)
+				
+				locator.locationToAddress(myLoc, 500);
+				locator.on("location-to-address-complete", function(evt) {
+				
+					if (evt.address.address) {
+						var address = evt.address.address.Address + " , " + evt.address.address.City;
+
+						var location = evt.address.location;
+						var graphic = new Graphic(location, sym, address);
+						//console.log("graphic")
+						//console.log(graphic)
+						map.graphics.clear();
+						map.graphics.add(graphic);
+						map.centerAndZoom(myLoc, 16);
+					
+					}
+				});	
+				
+		
+			}
+
+		
+
+
+			
+			function posError(error){
+				switch (error.code) {
+				case error.PERMISSION_DENIED:
+					alert("No permission to access position from device!");
+					break;
+				case error.POSITION_UNAVAILABLE:
+					alert("Position from device is unavailbale!")
+					break;
+				case error.TIMEOUT:
+					alert("Position from device is timed out!")
+					break;
+				default:
+					alert("Error when finding position!")
+					break;
+				}
+			}
+			
+			function calculateDriveTime(){
+				//console.log("here");
+				//console.log(timeTravel);
+				
+				var params = new ServiceAreaParameters();
+				params.defaultBreaks= [timeTravel];
+				params.outSpatialReference = new SpatialReference({wkid :102100});
+				params.returnFacilities = false;
+				
+				var serviceAreaTask = new ServiceAreaTask("https://route.arcgis.com/arcgis/rest/services/World/ServiceAreas/NAServer/ServiceArea_World/solveServiceArea?token=C67k5gPI3lsoSJ1qOpg5CvRNW-fhmTANf3wCw3qnOpXZho3v9tjVqIPg2ugSeDXpnULJp5ID0_rAVqWyQJePn-scPBqK_jTWXvw9K-XqGfnjAm6VB44BonEEA1LsrwXjg5gAu0hk1kWCRuEtgSjyWg..&f=json");
+				
+				geom102 =webMercatorUtils.geographicToWebMercator(map.graphics.graphics[0].geometry);
+				//console.log(geom102)
+				var features = [];
+					features.push(new Graphic(geom102, null));
+				var facilities = new FeatureSet();
+					facilities.features = features;
+				params.facilities = facilities;
+			
+				////console.log(params)
+				serviceAreaTask.solve(params, solve, function(err){
+					  //console.log(err.message);
+					  alert(err.message);
+				});
+							
+									
+				function solve (solveResult){
+					var polygonSymbol = new SimpleFillSymbol(
+						"solid",  
+						null,
+						new Color([255,0,255,0.25])
+					  );
+					 
+					 array.forEach(solveResult.serviceAreaPolygons, function(serviceArea){
+							serviceArea.setSymbol(polygonSymbol);
+							driveTimeLyr.add(serviceArea);
+							map.setExtent(graphicsUtils.graphicsExtent(solveResult.serviceAreaPolygons), true); 
+					  });
+					  
+				}	
+				
+				
+				
+				
+			
+			}
+			
+			
+			function intersect(){
+				//console.log("parkLyr.graphics");
+				//console.log(graphicsUtils.getGeometries(parkLyr.graphics));
+				metroGrLyrBuf.clear();
+				metroGrLyrBuf.clear();
+				inter1.clear();
+				inter2.clear();
+				inter3.clear();
+
+				var parkBuffs = geometryEngine.geodesicBuffer(graphicsUtils.getGeometries(parkLyr.graphics), [timeWalkP*100], 9001, true);
+
+				var symbol = new SimpleFillSymbol();
+					symbol.setColor(new Color([0,255, 0,0.08]));
+					symbol.setOutline(null);
+					
+				array.forEach(parkBuffs,function(geometry){
+					parksGrLyrBuf.add(new Graphic(geometry,symbol));
+				});
+				
+				var metroBuffs = geometryEngine.geodesicBuffer(graphicsUtils.getGeometries(metroLyr.graphics), [timeWalkM*100], 9001, true);
+				//console.log(metroBuffs);
+				var symbol = new SimpleFillSymbol();
+					symbol.setColor(new Color([255,255,255,0.08]));
+					symbol.setOutline(null);
+					
+				array.forEach(metroBuffs,function(geometry){
+					metroGrLyrBuf.add(new Graphic(geometry,symbol));
+				});
+				
+				//console.log(metroBuffs);
+				//console.log(parkBuffs);
+				
+				//var metroBuffs84 = webMercatorUtils.webMercatorToGeographic(metroBuffs);
+				//var parkBuffs84 = webMercatorUtils.webMercatorToGeographic(parkBuffs);
+				
+				////console.log(metroBuffs84);
+				////console.log(parkBuffs84);
+				
+				
+				var intersection1 = geometryEngine.intersect(graphicsUtils.getGeometries(parksGrLyrBuf.graphics), metroGrLyrBuf.graphics[0].geometry);
+				
+				//console.log(intersection1);
+				
+				var symbols = new SimpleFillSymbol();
+					symbols.setColor(new Color([255,255,0,0.3]));
+					symbols.setOutline(null);
+					
+				array.forEach(intersection1,function(geometry){
+					inter1.add(new Graphic(geometry,symbols));
+				});
+				
+				//
+				//console.log(inter1);
+				var intersection2 = geometryEngine.intersect(graphicsUtils.getGeometries(yelpGrLyrBuf.graphics), inter1.graphics[0].geometry);
+				
+				var symbols = new SimpleFillSymbol();
+					symbols.setColor(new Color([0,0,255,0.9]));
+					symbols.setOutline(null);
+					
+				array.forEach(intersection2,function(geometry){
+					inter2.add(new Graphic(geometry,symbols));
+				});
+				
+
+				
+				
+				var intersection3 = geometryEngine.intersect(graphicsUtils.getGeometries(driveTimeLyr.graphics), inter2.graphics[0].geometry);
+				
+
+				
+				
+				var symbols = new SimpleFillSymbol();
+					symbols.setColor(new Color([0,128,255,0.5]));
+					symbols.setOutline(new SimpleLineSymbol("solid", new Color([0,128,255]), 2));
+					
+				array.forEach(intersection3,function(geometry){
+					inter3.add(new Graphic(geometry,symbols));
+				});
+				mieszLyr.setOpacity(1.0);
+				map.setExtent(graphicsUtils.graphicsExtent(inter3.graphics), true); 
+				
+				
+				
+				
+				
+			
+				
+			
+			
+			}
+			
+			
+			setInterval(function(){
+				if (response){
+					response = false;
+					//console.log("response " + response)
+					parseData();
+				
+				}},1000);
+
+			function parseData(){
+				////console.log("parseData")
+				////console.log(results)
+				yelpGrLyr.clear();
+				yelpGrLyrBuf.clear();
+				array.forEach(results.businesses,function(r){
+				
+					var attrs = {};
+					attrs.name = r.name;
+					attrs.rating = r.rating;
+					attrs.phone = r.phone;
+					var longitude = r.location.coordinate.longitude
+					var latitude = r.location.coordinate.latitude
+					
+					var location = new Point(longitude, latitude)
+					var graphic = new Graphic(location, symYelp, attrs);				
+					yelpGrLyr.add(graphic);
+					map.setExtent(graphicsUtils.graphicsExtent(yelpGrLyr.graphics), true); 
+				});
+				
+				//do buffers
+				//console.log(timeWalk);
+				
+				var yelpBuffs = geometryEngine.geodesicBuffer(graphicsUtils.getGeometries(yelpGrLyr.graphics), [timeWalk*100], 9001, true);
+
+				var symbol = new SimpleFillSymbol();
+					symbol.setColor(new Color([255,0,0,0.08]));
+					symbol.setOutline(null);
+					
+				array.forEach(yelpBuffs,function(geometry){
+					yelpGrLyrBuf.add(new Graphic(webMercatorUtils.geographicToWebMercator(geometry),symbol));
+				});
+				
+				map.setExtent(graphicsUtils.graphicsExtent(yelpGrLyrBuf.graphics), true); 
+				
+				
+			
+			};
+			
+					
+			
+		
+			
+		});
+		
+	});
+    </script>
+	<script>
+		
+	
+	</script>
   </body>
 </html>
