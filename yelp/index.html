@@ -408,7 +408,7 @@
 							
 	 require(["esri/map", "esri/dijit/Popup", "esri/dijit/PopupTemplate",
 		"esri/layers/FeatureLayer", "esri/tasks/FeatureSet", "esri/geometry/Point", "esri/graphicsUtils", "esri/graphic", "esri/layers/GraphicsLayer",
-		"esri/tasks/ServiceAreaTask", "esri/tasks/ServiceAreaParameters", "esri/geometry/geometryEngine", "esri/tasks/locator",
+		"esri/tasks/ServiceAreaTask", "esri/tasks/ServiceAreaParameters", "esri/geometry/geometryEngine", "esri/tasks/locator", "esri/tasks/query",
 		"esri/SpatialReference", "esri/geometry/webMercatorUtils", "esri/config",
 		"esri/symbols/SimpleMarkerSymbol","esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/Color", "esri/symbols/PictureMarkerSymbol",
 		"esri/symbols/TextSymbol", "esri/symbols/Font", "esri/renderers/SimpleRenderer",
@@ -419,7 +419,7 @@
 		
         function(Map, Popup, PopupTemplate,
 		FeatureLayer, FeatureSet, Point, graphicsUtils, Graphic, GraphicsLayer,
-		ServiceAreaTask, ServiceAreaParameters, geometryEngine, Locator,
+		ServiceAreaTask, ServiceAreaParameters, geometryEngine, Locator, Query,
 		SpatialReference, webMercatorUtils, esriConfig,
 		SimpleMarkerSymbol,SimpleFillSymbol, SimpleLineSymbol, Color, PictureMarkerSymbol,
 		TextSymbol, Font, SimpleRenderer,
@@ -615,7 +615,7 @@
 				params.outSpatialReference = new SpatialReference({wkid :102100});
 				params.returnFacilities = false;
 				
-				var serviceAreaTask = new ServiceAreaTask("https://route.arcgis.com/arcgis/rest/services/World/ServiceAreas/NAServer/ServiceArea_World/solveServiceArea?token=C67k5gPI3lsoSJ1qOpg5CvRNW-fhmTANf3wCw3qnOpXZho3v9tjVqIPg2ugSeDXpnULJp5ID0_rAVqWyQJePn-scPBqK_jTWXvw9K-XqGfnjAm6VB44BonEEA1LsrwXjg5gAu0hk1kWCRuEtgSjyWg..&f=json");
+				var serviceAreaTask = new ServiceAreaTask("http://utility.arcgis.com/usrsvcs/appservices/b040fHqlgmu3nPua/rest/services/World/ServiceAreas/NAServer/ServiceArea_World&f=json");
 				
 				geom102 =webMercatorUtils.geographicToWebMercator(map.graphics.graphics[0].geometry);
 				//console.log(geom102)
@@ -732,7 +732,17 @@
 				array.forEach(intersection3,function(geometry){
 					inter3.add(new Graphic(geometry,symbols));
 				});
+				
+				var query = new Query();
+				query.geometry = intersection3;
+				mieszLyr.queryFeatures(query, selectInBuffer);
+				
+				
+				
+				
+				
 				mieszLyr.setOpacity(1.0);
+				
 				map.setExtent(graphicsUtils.graphicsExtent(inter3.graphics), true); 
 				
 				
