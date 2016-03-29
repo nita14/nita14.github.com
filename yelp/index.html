@@ -732,14 +732,7 @@
 				array.forEach(intersection3,function(geometry){
 					inter3.add(new Graphic(geometry,symbols));
 				});
-				
-				var query = new Query();
-				query.geometry = intersection3;
-				mieszLyr.queryFeatures(query, selectInBuffer);
-				
-				
-				
-				
+							
 				
 				mieszLyr.setOpacity(1.0);
 				
