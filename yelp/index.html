@@ -398,7 +398,7 @@
 							
 	 require(["esri/map", "esri/dijit/Popup", "esri/dijit/PopupTemplate",
 		"esri/layers/FeatureLayer", "esri/tasks/FeatureSet", "esri/geometry/Point", "esri/graphicsUtils", "esri/graphic", "esri/layers/GraphicsLayer",
-		"esri/tasks/ServiceAreaTask", "esri/tasks/ServiceAreaParameters", "esri/geometry/geometryEngine", "esri/tasks/locator",
+		"esri/tasks/ServiceAreaTask", "esri/tasks/ServiceAreaParameters", "esri/geometry/geometryEngine", "esri/tasks/locator", "esri/tasks/query",
 		"esri/SpatialReference", "esri/geometry/webMercatorUtils", "esri/config",
 		"esri/symbols/SimpleMarkerSymbol","esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/Color", "esri/symbols/PictureMarkerSymbol",
 		"esri/symbols/TextSymbol", "esri/symbols/Font", "esri/renderers/SimpleRenderer", "esri/tasks/query", 
@@ -409,7 +409,7 @@
 		
         function(Map, Popup, PopupTemplate,
 		FeatureLayer, FeatureSet, Point, graphicsUtils, Graphic, GraphicsLayer,
-		ServiceAreaTask, ServiceAreaParameters, geometryEngine, Locator,
+		ServiceAreaTask, ServiceAreaParameters, geometryEngine, Locator, Query,
 		SpatialReference, webMercatorUtils, esriConfig,
 		SimpleMarkerSymbol,SimpleFillSymbol, SimpleLineSymbol, Color, PictureMarkerSymbol,
 		TextSymbol, Font, SimpleRenderer, Query,
@@ -698,6 +698,16 @@
 				array.forEach(intersection3,function(geometry){
 					inter3.add(new Graphic(geometry,symbols));
 				});
+<<<<<<< HEAD
+=======
+							
+				
+				mieszLyr.setOpacity(1.0);
+				
+				map.setExtent(graphicsUtils.graphicsExtent(inter3.graphics), true); 
+				
+				
+>>>>>>> origin/master
 				
 				var query = new Query();
 				query.geometry = inter3.graphics[0].geometry;
