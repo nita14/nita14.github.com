@@ -698,16 +698,11 @@
 				array.forEach(intersection3,function(geometry){
 					inter3.add(new Graphic(geometry,symbols));
 				});
-<<<<<<< HEAD
-=======
 							
-				
-				mieszLyr.setOpacity(1.0);
 				
 				map.setExtent(graphicsUtils.graphicsExtent(inter3.graphics), true); 
 				
 				
->>>>>>> origin/master
 				
 				var query = new Query();
 				query.geometry = inter3.graphics[0].geometry;
