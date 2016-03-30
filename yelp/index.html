@@ -342,19 +342,11 @@
 			var results;
 			var response = false;
 			
-			////console.log("yelp  " + makeYelpRequest())
-			//var url = makeYelpRequest();
-			
 			$scope.search = function() {
-				//console.log("here")
-				//console.log(angular.element('#yelpCont').val())
-				//console.log(map.graphics.graphics[0].attributes)
 				var url = makeYelpRequest(angular.element('#yelpCont').val(), map.graphics.graphics[0].attributes);
 				$http.jsonp(url)
 					.success(function(data){
 						results = data;
-						//console.log("data") 
-						//console.log(data)
 						response = true;
 				});
 			
@@ -368,8 +360,6 @@
 					accessToken: "-E51h2P_S2wjwoZ3K8q43iMtUUUJLN0m",
 					accessTokenSecret: "UTbfUh8MqymY5DJTGIa6aGDINb8"
 					}
-				  //var terms = 'fitness';
-				  //var near = 'Warszawa';
 
 				  var accessor = {
 					consumerSecret: auth.consumerSecret,
@@ -411,7 +401,7 @@
 		"esri/tasks/ServiceAreaTask", "esri/tasks/ServiceAreaParameters", "esri/geometry/geometryEngine", "esri/tasks/locator",
 		"esri/SpatialReference", "esri/geometry/webMercatorUtils", "esri/config",
 		"esri/symbols/SimpleMarkerSymbol","esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/Color", "esri/symbols/PictureMarkerSymbol",
-		"esri/symbols/TextSymbol", "esri/symbols/Font", "esri/renderers/SimpleRenderer",
+		"esri/symbols/TextSymbol", "esri/symbols/Font", "esri/renderers/SimpleRenderer", "esri/tasks/query", 
 		"dojo/number", "esri/urlUtils",
 		"application/bootstrapmap", "application/auth",
 		"dojo/dom-class", "dojo/dom-construct", "dojo/on", "dojo/dom", "dojo/_base/array",
@@ -422,7 +412,7 @@
 		ServiceAreaTask, ServiceAreaParameters, geometryEngine, Locator,
 		SpatialReference, webMercatorUtils, esriConfig,
 		SimpleMarkerSymbol,SimpleFillSymbol, SimpleLineSymbol, Color, PictureMarkerSymbol,
-		TextSymbol, Font, SimpleRenderer,
+		TextSymbol, Font, SimpleRenderer, Query,
 		number, urlUtils,
 		BootstrapMap, auth,
 		domClass, domConstruct, on, dom, array
@@ -493,8 +483,6 @@
 				infoTemplate: szablonMiesz				
 			});
 			
-			//var metSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 16, null, new Color([255,255,0,0.60])
-			///	);  
 			var metRenderer = new SimpleRenderer(new PictureMarkerSymbol("images/train.png", 18, 18));
 			metroLyr.setRenderer(metRenderer);
 			
@@ -563,6 +551,16 @@
 			}
 			
 			function showPosition(position) {
+				
+			
+				if (position.coords.latitude < 51.981 || 
+					parseFloat(position.coords.latitude) > 52.517 ||
+					parseFloat(position.coords.longitude) < 19.837 ||
+					parseFloat(position.coords.longitude) > 22.417){
+					alert("You are not in Warsaw area. Please use geolocation emulator in dev console.");
+					return;
+				
+				}
 				myLoc = new Point(position.coords.longitude,position.coords.latitude)
 				
 				locator.locationToAddress(myLoc, 500);
@@ -573,8 +571,6 @@
 
 						var location = evt.address.location;
 						var graphic = new Graphic(location, sym, address);
-						//console.log("graphic")
-						//console.log(graphic)
 						map.graphics.clear();
 						map.graphics.add(graphic);
 						map.centerAndZoom(myLoc, 16);
@@ -585,10 +581,6 @@
 		
 			}
 
-		
-
-
-			
 			function posError(error){
 				switch (error.code) {
 				case error.PERMISSION_DENIED:
@@ -607,8 +599,7 @@
 			}
 			
 			function calculateDriveTime(){
-				//console.log("here");
-				//console.log(timeTravel);
+
 				
 				var params = new ServiceAreaParameters();
 				params.defaultBreaks= [timeTravel];
@@ -618,16 +609,13 @@
 				var serviceAreaTask = new ServiceAreaTask("https://route.arcgis.com/arcgis/rest/services/World/ServiceAreas/NAServer/ServiceArea_World/solveServiceArea?token=C67k5gPI3lsoSJ1qOpg5CvRNW-fhmTANf3wCw3qnOpXZho3v9tjVqIPg2ugSeDXpnULJp5ID0_rAVqWyQJePn-scPBqK_jTWXvw9K-XqGfnjAm6VB44BonEEA1LsrwXjg5gAu0hk1kWCRuEtgSjyWg..&f=json");
 				
 				geom102 =webMercatorUtils.geographicToWebMercator(map.graphics.graphics[0].geometry);
-				//console.log(geom102)
 				var features = [];
 					features.push(new Graphic(geom102, null));
 				var facilities = new FeatureSet();
 					facilities.features = features;
 				params.facilities = facilities;
-			
-				////console.log(params)
+
 				serviceAreaTask.solve(params, solve, function(err){
-					  //console.log(err.message);
 					  alert(err.message);
 				});
 							
@@ -655,10 +643,8 @@
 			
 			
 			function intersect(){
-				//console.log("parkLyr.graphics");
-				//console.log(graphicsUtils.getGeometries(parkLyr.graphics));
 				metroGrLyrBuf.clear();
-				metroGrLyrBuf.clear();
+				parksGrLyrBuf.clear();
 				inter1.clear();
 				inter2.clear();
 				inter3.clear();
@@ -674,7 +660,6 @@
 				});
 				
 				var metroBuffs = geometryEngine.geodesicBuffer(graphicsUtils.getGeometries(metroLyr.graphics), [timeWalkM*100], 9001, true);
-				//console.log(metroBuffs);
 				var symbol = new SimpleFillSymbol();
 					symbol.setColor(new Color([255,255,255,0.08]));
 					symbol.setOutline(null);
@@ -683,19 +668,8 @@
 					metroGrLyrBuf.add(new Graphic(geometry,symbol));
 				});
 				
-				//console.log(metroBuffs);
-				//console.log(parkBuffs);
-				
-				//var metroBuffs84 = webMercatorUtils.webMercatorToGeographic(metroBuffs);
-				//var parkBuffs84 = webMercatorUtils.webMercatorToGeographic(parkBuffs);
-				
-				////console.log(metroBuffs84);
-				////console.log(parkBuffs84);
-				
 				
 				var intersection1 = geometryEngine.intersect(graphicsUtils.getGeometries(parksGrLyrBuf.graphics), metroGrLyrBuf.graphics[0].geometry);
-				
-				//console.log(intersection1);
 				
 				var symbols = new SimpleFillSymbol();
 					symbols.setColor(new Color([255,255,0,0.3]));
@@ -705,8 +679,6 @@
 					inter1.add(new Graphic(geometry,symbols));
 				});
 				
-				//
-				//console.log(inter1);
 				var intersection2 = geometryEngine.intersect(graphicsUtils.getGeometries(yelpGrLyrBuf.graphics), inter1.graphics[0].geometry);
 				
 				var symbols = new SimpleFillSymbol();
@@ -716,15 +688,9 @@
 				array.forEach(intersection2,function(geometry){
 					inter2.add(new Graphic(geometry,symbols));
 				});
-				
-
-				
-				
+	
 				var intersection3 = geometryEngine.intersect(graphicsUtils.getGeometries(driveTimeLyr.graphics), inter2.graphics[0].geometry);
-				
 
-				
-				
 				var symbols = new SimpleFillSymbol();
 					symbols.setColor(new Color([0,128,255,0.5]));
 					symbols.setOutline(new SimpleLineSymbol("solid", new Color([0,128,255]), 2));
@@ -732,16 +698,24 @@
 				array.forEach(intersection3,function(geometry){
 					inter3.add(new Graphic(geometry,symbols));
 				});
-				mieszLyr.setOpacity(1.0);
+				
+				var query = new Query();
+				query.geometry = inter3.graphics[0].geometry;
+				mieszLyr.queryFeatures(query, viewAdds);
+		  
+				function viewAdds(response){
+					if(response.features.length ==0){
+						alert("No properties for rent found in the area.")
+						return;
+					}
+					oid = response.features[0].attributes.OBJECTID
+					expression = "OBJECTID = " + oid;
+					mieszLyr.setDefinitionExpression(expression);
+					mieszLyr.setOpacity(1.0);
+				}
+		  
+				
 				map.setExtent(graphicsUtils.graphicsExtent(inter3.graphics), true); 
-				
-				
-				
-				
-				
-			
-				
-			
 			
 			}
 			
@@ -749,14 +723,11 @@
 			setInterval(function(){
 				if (response){
 					response = false;
-					//console.log("response " + response)
 					parseData();
 				
 				}},1000);
 
 			function parseData(){
-				////console.log("parseData")
-				////console.log(results)
 				yelpGrLyr.clear();
 				yelpGrLyrBuf.clear();
 				array.forEach(results.businesses,function(r){
@@ -773,9 +744,7 @@
 					yelpGrLyr.add(graphic);
 					map.setExtent(graphicsUtils.graphicsExtent(yelpGrLyr.graphics), true); 
 				});
-				
-				//do buffers
-				//console.log(timeWalk);
+			
 				
 				var yelpBuffs = geometryEngine.geodesicBuffer(graphicsUtils.getGeometries(yelpGrLyr.graphics), [timeWalk*100], 9001, true);
 
@@ -788,15 +757,9 @@
 				});
 				
 				map.setExtent(graphicsUtils.graphicsExtent(yelpGrLyrBuf.graphics), true); 
-				
-				
-			
+
 			};
-			
-					
-			
-		
-			
+
 		});
 		
 	});
