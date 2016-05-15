@@ -1,0 +1,55 @@
+ <div class="jumbotron text-center">
+        <h1 class="middleText">Please fill in the form...</h1>
+
+        <md-content class="md-no-momentum" layout="column" layout-padding ng-cloak>
+			<md-input-container class="md-icon-float md-block">
+				<label>My name is (required)</label>
+				<md-icon class="material-icons">person</md-icon>
+				<input ng-model="user.name" type="text" ng-required="true">
+			</md-input-container>
+			<div layout-gt-xs="row">
+				<md-input-container class="md-icon-float md-block" flex-gt-xs>
+					<label>My home address is (required)</label>
+					<md-icon class="material-icons">home</md-icon>
+					<input ng-model="user.home" type="text" placeholder="asdasd" ng-required="true">
+				</md-input-container >
+				<md-input-container class="md-icon-float md-block">
+					<label>I go to work at </label>
+					<md-icon class="material-icons"><i class="material-icons">update</i></md-icon>
+					<md-select ng-model="user.homeTime" md-selected-text="getSelectedHour()">
+					  <md-optgroup label="Hour">
+						<md-option ng-value="hour" ng-repeat="hour in hours">{{hour}}</md-option >
+					  </md-optgroup>
+					</md-select>
+				</md-input-container>
+			</div>
+			<div layout-gt-xs="row">
+				<md-input-container class="md-icon-float md-block" flex-gt-xs>
+					<label>My work address is (required)</label>
+				  <md-icon class="material-icons">work</md-icon>
+				  <input ng-model="user.work" type="text" placeholder="asdasd" ng-required="true">
+				</md-input-container>
+				<md-input-container class="md-icon-float md-block">
+					<label>I return form work at </label>
+					<md-icon class="material-icons"><i class="material-icons">update</i></md-icon>
+					<md-select ng-model="user.workTime" md-selected-text="getSelectedHourWork()">
+					  <md-optgroup label="Hour">
+						<md-option ng-value="hour" ng-repeat="hour in hoursWork">{{hour}}</md-option >
+					  </md-optgroup>
+					</md-select>
+				</md-input-container>
+			</div>
+			<md-input-container class="md-icon-float md-block">
+				<label>Car type I travel is </label>
+				<md-icon class="material-icons"><i class="material-icons">directions_car</i></md-icon>
+				<md-select ng-model="user.car" md-selected-text="getSelectedCar()">
+				  <md-optgroup label="Car">
+					<md-option ng-value="car" ng-repeat="car in cars">{{car}}</md-option >
+				  </md-optgroup>
+				</md-select>
+			</md-input-container>
+			<div layout="row" layout-align="center center">
+			<md-button ng-click="summary()" class="md-raised md-warn" layout-align="start center" >Create summary</md-button>
+			</div>
+		  </md-content>
+    </div>

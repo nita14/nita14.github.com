@@ -1,0 +1,53 @@
+.fabToolbardemoBasicUsage md-fab-toolbar.md-right md-fab-trigger.align-with-text {
+  left: 7px; }
+  
+  
+.middleText {
+	text-align: center;
+}
+
+
+.inputdemoIcons {
+  /*
+.right-icon {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  left: auto;
+  margin-top: 0;
+}
+*/ }
+  .inputdemoIcons .inputIconDemo {
+    min-height: 48px; }
+  .inputdemoIcons md-input-container:not(.md-input-invalid) > md-icon.email {
+    color: green; }
+  .inputdemoIcons md-input-container:not(.md-input-invalid) > md-icon.name {
+    color: dodgerblue; }
+  .inputdemoIcons md-input-container.md-input-invalid > md-icon.email,
+  .inputdemoIcons md-input-container.md-input-invalid > md-icon.name {
+    color: red; }
+	
+.icons {
+	vertical-align:sub;
+}
+.gridList md-grid-list {
+  margin: 8px;}
+.gridList .gray {
+  background: #f5f5f5; }
+.gridList .green {
+  background: #b9f6ca; }
+.gridList .yellow {
+  background: #ffff8d; }
+.gridList .blue {
+  background: #84ffff; }
+.gridList .purple {
+  background: #b388ff; }
+.gridList .red {
+  background: #ff8a80; }
+.gridList md-grid-tile {
+  transition: all 400ms ease-out 50ms; }
+
+.map{
+	height: 80%;
+	
+}

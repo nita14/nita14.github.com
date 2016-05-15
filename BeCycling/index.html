@@ -1,0 +1,51 @@
+<html ng-app="beCycle">
+    <head>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+        <meta charset="utf-8">
+        <title>BeCycling</title>
+       
+		<link rel="stylesheet" type="text/css" href="css/def.css">
+		<link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.16/esri/css/esri.css">
+
+
+    </head>
+    <body style='background-image: url("http://www.thehubway.com/assets/images/banners/home/home-banner-join1.jpg"); background-repeat:no-repeat;
+	background-size: cover;'>
+		<div id="toolbarContainer" class="fabToolbardemoBasicUsage" ng-cloak="">
+         <md-fab-toolbar md-open="Open" md-direction="left">
+            <md-fab-trigger class="align-with-text">
+               <md-button aria-label="menu" class="md-fab md-primary">
+                  <md-icon class="material-icons">menu</md-icon>
+               </md-button>
+            </md-fab-trigger>
+            <md-toolbar>
+               <md-fab-actions class="md-toolbar-tools">
+                  <md-button aria-label="home" href="index.html" class="md-icon-button">
+                     <md-icon class="material-icons" aria-label="Add">home</md-icon>
+                  </md-button>
+                  <md-button aria-label="Insert Link"  href="#selectParams" class="md-icon-button">
+                     <md-icon class="material-icons" aria-label="Insert Link">create</md-icon>
+                  </md-button>
+				  <md-button aria-label="Insert Link"  href="#showSummary" class="md-icon-button">
+                     <md-icon class="material-icons" aria-label="Insert Link">description</md-icon>
+                  </md-button>
+               </md-fab-actions>
+            </md-toolbar>
+         </md-fab-toolbar>
+		</div>
+		<div ng-view></div>
+
+	  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+	  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+	  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	  <script type="text/javascript" src="//js.arcgis.com/3.16compact"></script>
+        <script src="lib/angular-esri-map.js"></script>
+		<script src="app.js"></script>
+ 
+    </body>
+</html>

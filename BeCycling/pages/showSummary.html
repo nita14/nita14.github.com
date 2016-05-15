@@ -1,0 +1,117 @@
+<!-- home.html -->
+    <div class="jumbotron text-left">
+        <h1 class="middleText">Travel modes summary</h1>
+		<div class="gridList">
+		  <md-grid-list md-cols-xs="1" md-cols-sm="2" md-cols-md="4" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="12px" md-gutter-gt-sm="8px">
+			<md-grid-tile class="green" md-rowspan="2" md-colspan="2" md-colspan-sm="1" md-colspan-xs="1">
+				<div>
+					<md-grid-tile-header class="icons">		
+						&nbsp<md-icon class="material-icons icons" aria-label="Add" >directions_bike</md-icon>
+						<span style="color:black;"><b>&nbsp Bicycling</b></span>
+					</md-grid-tile-header>
+				</div>
+				<div>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_bike</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >attach_money</md-icon> cost per month is <b style="color:red;">{{Math.round(bikeArray[0])}} </b>$ 
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_bike</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >access_time</md-icon> time per day is <b style="color:red;">{{Math.round(bikeArray[1])}} </b> minutes
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_bike</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >directions</md-icon> distance per day is <b style="color:red;">{{Math.round(bikeArray[2])}} </b> kilometers
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_bike</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >favorite</md-icon> calories burnt per day is <b style="color:red;">{{Math.round(bikeArray[3])}} </b> kcal
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_bike</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >terrain</md-icon> carbon footprint per month is <b style="color:red;">{{Math.round(bikeArray[4])}} </b>g of CO<sup>2</sup>
+					</p>
+				</div>
+			  <md-grid-tile-footer>
+				<md-button class="md-icon-button" aria-label="Favorite" href="#mapBike">
+					  <md-icon class="material-icons" aria-label="Add">map</md-icon>
+					</md-button>
+			  </md-grid-tile-footer>
+			</md-grid-tile>
+
+			<md-grid-tile class="blue" md-rowspan="2" md-colspan="2" md-colspan-sm="1" md-colspan-xs="1">
+			<div>
+					<md-grid-tile-header class="icons">		
+						&nbsp<md-icon class="material-icons icons" aria-label="Add" >directions_walk</md-icon>
+						<span style="color:black;"><b>&nbsp Walking</b></span>
+					</md-grid-tile-header>
+				</div>
+				<div>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_walk</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >attach_money</md-icon> cost per month is <b style="color:red;">{{Math.round(walkArray[0])}} </b>$
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_walk</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >access_time</md-icon> time per day is <b style="color:red;">{{Math.round(walkArray[1])}} </b> minutes
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_walk</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >directions</md-icon> distance per day is <b style="color:red;">{{Math.round(walkArray[2])}} </b> kilometers
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_walk</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >favorite</md-icon> calories burnt per day is <b style="color:red;">{{Math.round(walkArray[3])}} </b> kcal
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_walk</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >terrain</md-icon> carbon footprint per month is <b style="color:red;">{{Math.round(walkArray[4])}} </b>g of CO<sup>2</sup>
+					</p>
+				</div>
+			  <md-grid-tile-footer>
+				<md-button class="md-icon-button" aria-label="Favorite" href="#mapWalk">
+					  <md-icon class="material-icons" aria-label="Add">map</md-icon>
+					</md-button>
+			  </md-grid-tile-footer>
+			</md-grid-tile>
+
+			<md-grid-tile class="yellow" md-rowspan="2" md-colspan="2" md-colspan-sm="1" md-colspan-xs="1">
+				<div>
+					<md-grid-tile-header class="icons">		
+						&nbsp<md-icon class="material-icons icons" aria-label="Add" >directions_car</md-icon>
+						<span style="color:black;"><b>&nbsp Driving Car </b></span>
+					</md-grid-tile-header>
+				</div>
+				<div>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_car</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >attach_money</md-icon> cost per month is <b style="color:red;">{{Math.round(driveArray[0])}} </b>$ 
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_car</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >access_time</md-icon> time per day is <b style="color:red;">{{Math.round(driveArray[1])}} </b> minutes
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_car</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >directions</md-icon> distance per day is <b style="color:red;">{{Math.round(driveArray[2])}} </b> kilometers
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_car</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >favorite</md-icon> calories burnt per day is <b style="color:red;">{{Math.round(driveArray[3])}} </b> kcal
+					</p>
+					<p>
+					<md-icon class="material-icons icons" aria-label="Add" >directions_car</md-icon>
+					<md-icon class="material-icons icons" aria-label="Add" >terrain</md-icon> carbon footprint per month is <b style="color:red;">{{Math.round(driveArray[4])}} </b>g of CO<sup>2</sup>
+					</p>
+				</div>
+			  <md-grid-tile-footer>
+				<md-button class="md-icon-button" aria-label="Favorite" href="#mapCar">
+					  <md-icon class="material-icons" aria-label="Add" >map</md-icon>
+				</md-button>
+			  </md-grid-tile-footer>
+			</md-grid-tile>
+		  </md-grid-list>
+		</div>
+		
+	</div>
+	
