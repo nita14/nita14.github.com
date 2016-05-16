@@ -264,7 +264,7 @@ var beCycleApp = angular.module('beCycle', ['ngRoute','ngMaterial','esri.map']);
 							localStorage.setItem('distanceBicycle', JSON.stringify($scope.distanceWalk));
 							localStorage.setItem('timeBicycle', JSON.stringify($scope.timeWalk)/2.1);
 							
-							$window.location.href = '#/showSummary';
+							setTimeout(function(){$window.location.href = '#/showSummary';},1500);
 						
 
 				});	
