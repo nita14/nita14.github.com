@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp"
+    android:orientation="vertical"
+    android:id="@+id/callout_stop">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp">
+
+        <ImageView
+            android:id="@+id/star_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_star"
+            android:onClick="getStopCalloutStar"/>
+
+        <ImageView
+            android:id="@+id/chart_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/star_img"
+            android:layout_toRightOf="@id/star_img"
+            android:src="@drawable/ic_chart"
+            android:onClick="getStopCalloutChart"/>
+
+        <TextView
+            android:id="@+id/text_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/chart_img"
+            android:layout_toRightOf="@id/chart_img"
+            android:textSize="12dp"
+            android:text=""/>
+
+
+    </RelativeLayout>
+</LinearLayout>

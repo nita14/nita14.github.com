@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/route_summary_id"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="40dp"
+        >
+
+        <ImageView
+            android:id="@+id/len_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:src="@drawable/ic_length"/>
+
+        <TextView
+            android:id="@+id/total_length"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/len_img"
+            android:layout_toRightOf="@id/len_img"
+            android:textSize="20dp" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="40dp">
+
+        <ImageView
+            android:id="@+id/time_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:src="@drawable/ic_time"/>
+
+        <TextView
+            android:id="@+id/total_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/time_img"
+            android:layout_toRightOf="@id/time_img"
+            android:textSize="20dp" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="40dp">
+
+        <ImageView
+            android:id="@+id/cal_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:src="@drawable/ic_calories"/>
+
+        <TextView
+            android:id="@+id/total_calories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/cal_img"
+            android:layout_toRightOf="@id/cal_img"
+            android:textSize="20dp" />
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="40dp">
+
+        <ImageView
+            android:id="@+id/car_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:src="@drawable/ic_carbon"/>
+
+        <TextView
+            android:id="@+id/total_carbon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/car_img"
+            android:layout_toRightOf="@id/car_img"
+            android:textSize="20dp" />
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="30dp"
+        android:textSize="22dp"
+        android:text="@string/start_navigation"
+        android:textColor="@color/colorAccent"/>
+
+
+</LinearLayout>

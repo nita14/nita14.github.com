@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/map_vertical_margin"
+    android:paddingLeft="@dimen/map_horizontal_margin"
+    android:paddingRight="@dimen/map_horizontal_margin"
+    tools:context="detroit.com.safeandsound.DisplayMap">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/mapFrameLayout">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/gps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:scaleType="center"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_gps_loc" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:scaleType="center"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_menu" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/route"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:scaleType="center"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_routing" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top"
+            android:scaleType="center"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_add" />
+        <com.esri.arcgisruntime.mapping.view.MapView
+            android:id="@+id/mapView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+        </com.esri.arcgisruntime.mapping.view.MapView>
+    </FrameLayout>
+
+</LinearLayout>

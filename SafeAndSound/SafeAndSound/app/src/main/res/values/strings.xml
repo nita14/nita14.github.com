@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">Safe &amp; Sound</string>
+    <string name="userName_edit">Your name</string>
+    <string name="login_button_name">Login</string>
+    <string name="login_exist">Sorry, login name already exist. Change it and try again.</string>
+    <string name="login_success">Login successfully added!</string>
+    <string name="login_error">Sorry, and error has been encountered. Try again later.</string>
+    <string name="login_url">http://services.arcgis.com/rQ4nYWw3vwjxcr1D/ArcGIS/rest/services/DetroitPosData/FeatureServer/0</string>
+    <string name="incident_data">http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/DetroitIncidentDensity/FeatureServer/</string>
+    <string name="reference_data">http://services.arcgis.com/rQ4nYWw3vwjxcr1D/arcgis/rest/services/DetroitReferenceData/FeatureServer/</string>
+    <string name="traffic_data">http://traffic.arcgis.com/arcgis/rest/services/World/Traffic/MapServer/</string>
+    <string name="traffic_incidents">http://traffic.arcgis.com/arcgis/rest/services/World/Traffic/MapServer/4</string>
+    <string name="point_incidents">http://services.arcgis.com/rQ4nYWw3vwjxcr1D/ArcGIS/rest/services/DetroitIncidents/FeatureServer/0</string>
+
+
+    <!-- Strings related to Settings -->
+
+    <string name="title_activity_menu">Settings</string>
+    <string name="incident_layer_summary">Show or hide data</string>
+    <string name="incident_layer_title">Safety incidents density</string>
+    <string name="traffic_layer_title">Current traffic conditions</string>
+    <string name="add_users_title">Friends locations</string>
+    <string name="outside_detroit">You are outside Detroit City</string>
+
+    <string name="route_mode_name">Route type</string>
+    <string name="incident_layer_on">is visible</string>
+    <string name="incident_layer_off">is hidden</string>
+    <string name="routing_header">Routing settings</string>
+    <string name="route_transit_name">Transit type</string>
+    <string name="general_header">General</string>
+    <string name="layers_header">Layers</string>
+    <string name="position_header">My Location</string>
+    <string name="route_stops_name">Find best sequence of stops</string>
+    <string name="route_stops_true">Yes</string>
+    <string name="route_stops_false">No</string>
+    <string name="token_endpoint">https://www.arcgis.com/sharing/rest/oauth2/token</string>
+
+    <string name="traffic_layer_summary">Show or hide current conditions</string>
+    <string name="route_stop_first_name">Start with my location</string>
+    <string name="route_stop_last_name">Preserve last stop</string>
+    <string name="route_cur_incident">Bypass traffic incidents</string>
+
+    <!--route summeaty-->
+    <string name="route_summary">Start navigation?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="miles">miles </string>
+    <string name="minutes">minutes</string>
+    <string name="kCal">kCal</string>
+    <string name="co2">g of CO2</string>
+    <string name="start_navigation">Start navigation now ? </string>
+    <string name="select_favourite">Select favourite...</string>
+    <string name="add_favourite">Add favourite name</string>
+
+
+
+    <string name="select_type_add">What would like to add ?</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_address_found">Sorry, cannot find address</string>
+    <string name="no_route_found">Sorry, cannot create route</string>
+    <string name="address">e.g. 1588 Elm St</string>
+    <string name="fav_name">e.g. My home</string>
+    <string name="searching_for_address">Searching for address...</string>
+    <string name="searching_for_incidents">Searching for incidents nearby...</string>
+    <string name="searching_nearby_users">Searching nearby users...</string>
+    <string name="select_user_add">Select friend to track</string>
+    <string name="updating_atts">Sending request...</string>
+    <string name="my_location_search">Sharing my location</string>
+    <string name="my_location_yes">is enabled</string>
+    <string name="my_location_no">is disabled</string>
+    <string name="welcome">Welcome</string>
+    <string name="log_in">Fill in your name and login</string>
+    <string name="logging_in">Trying to log in ...</string>
+
+
+</resources>

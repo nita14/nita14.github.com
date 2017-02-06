@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="mode_value" >
+        <item>Safest</item>
+        <item>Fastest</item>
+        <item>Shortest</item>
+    </string-array>
+    <string-array name="transit_value" >
+        <item>Driving</item>
+        <item>Walking</item>
+        <item>Bicycling</item>
+    </string-array>
+    <string-array name="type_to_add" >
+        <item>Stop from my location</item>
+        <item>Stop from address</item>
+        <item>Stop from map</item>
+        <item>Stop from favourites</item>
+        <item>Point barrier</item>
+        <item>Friend to track</item>
+    </string-array>
+</resources>
