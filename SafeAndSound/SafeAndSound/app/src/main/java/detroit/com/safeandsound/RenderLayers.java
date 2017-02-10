@@ -151,7 +151,7 @@ public class RenderLayers {
     }
 
     public static UserCredential getUserCredentails() {
-        return new UserCredential("detroit_app", "Detroit1");
+        return new UserCredential("x", "y");
     }
 
     public static ArcGISMapImageLayer visualizeTraffic(String url) {
