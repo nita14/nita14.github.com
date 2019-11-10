@@ -53,10 +53,10 @@
                 <a href="#how" onclick = $("#menu-close").click(); >Challenge</a>
             </li>
             <li>
-                <a href="#idea1" onclick = $("#menu-close").click(); >More Greenery</a>
+                <a href="#idea1" onclick = $("#menu-close").click(); >Greenery</a>
             </li>
             <li>
-                <a href="#portfolio" onclick = $("#menu-close").click(); >Portfolio</a>
+                <a href="#portfolio" onclick = $("#menu-close").click(); >Cycleways</a>
             </li>
             <li>
                 <a href="#contact" onclick = $("#menu-close").click(); >Contact</a>
@@ -68,11 +68,24 @@
     <header id="top" class="header">
         <div class="text-vertical-center">
             <h1>Here Is My Place</h1>
-            <h3>Turning Warsaw to healthy and vibrant city using maps</h3>
+            <h3><b>Turning Warsaw to healthy and vibrant city using maps</b></h3>
             <br>
-            <a href="#how" class="btn btn-dark btn-lg">Find out why and how?</a>
+            <a href="#how" class="btn btn-dark btn-lg"><b>Find out why and how?</b></a>
         </div>
     </header>
+
+    <!-- About -->
+    <section id="currentAir" class="about" style="padding: 0px !important;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2 id="currentAirDesc"></h2>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container -->
+        </section>
 
     <!-- About -->
     <section id="how" class="about">
@@ -80,16 +93,20 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2>Challenge</h2>
-                    <p class="lead">Warsaw, a capital of Poland, is attracting people with lots of working opportunities. Almost 300K of them
-                        commute every day from surrounding areas to their place of work spending spending on average 41 minutes in a seat. 
-                        Huge amount of car traffic makes the city by far too congested and inaccessible for citizens. Moreover, with rapidly
-                        expanding high building business and housing ares, the air quality seems to be the most crucial issue that local
-                        authorities have to tackle as a first priority.
+                    <p class="lead">Warsaw, a capital of Poland, is attracting people with big city lifestyle and tons
+                         of working opportunities. Almost 300K of them commute every day from surrounding areas to 
+                         their place of work spending on average 41 minutes in seat. Huge amount of car traffic makes 
+                         the city by far too congested and inaccessible for citizens. Moreover, with rapidly expanding 
+                         high building business and housing areas, <b>air quality seems to be the most important issue that
+                         local authorities need to tackle as a first priority</b>.
+
                         
                     </p>
-                    <p class="lead"> So... how can maps and HERE XYZ services can help to decrease congestion
-                        and improve the quality of air? Simply, invest more in the eco-friendly infrastructure, encourage people to change 
-                        their habits by showing them what profits they could have achieved. Here is how to do that:
+                    <p class="lead"> So... how maps and HERE XYZ services can help Warsaw to breath with ease?
+                        To put it simply, show  <b>where to invest more in the eco-friendly infrastructure, encourage 
+                        people to change their habits by giving what profits they might achieve</b>. The application is 
+                        going to depict some recommendations and steps forward that would help to make the city more
+                         healthy and liveable. Here is how to do that:
                     </p>
                 </div>
             </div>
@@ -118,8 +135,8 @@
                                     which stands the city at the 12<SUP>th</SUP> place around the world) at stone's throw,
                                     there is still a lot to be done. 
                                 </p>
-                                <p> The spatial distribution of green areas does not overlay with locations
-                                    of the most populated areas (See map below). The lack of natural areas is especially 
+                                <p> The <b>spatial distribution of green areas does not overlay with locations
+                                    of the most populated areas (see map below)</b>. The lack of natural areas is especially 
                                     affecting the city center (Śródmieście) and the south-west part of the city
                                     (Ursus) depicted as red areas on the map below. Thus, some more natural areas needs to 
                                     be created there to let people unwind and help city to breath a cleaner air.
@@ -152,7 +169,7 @@
                                 <h4>
                                     <strong>Kilometers of Cycleways</strong>
                                 </h4>
-                                <p>Build more cycling routes connecting most populated areas with business districts.
+                                <p>Next step is to build more cycling routes connecting most populated areas with business districts.
                                     According to the latest data, everyday there is around 75K cyclists travelling across 600
                                     kilometers of available cycleways.
                                 </p>
@@ -237,6 +254,59 @@
             }
         });
     });
+
+    /////Get current data for your lcoation
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            console.log(position.coords.latitude, position.coords.longitude);
+
+            Send_Request_to_Airly(position.coords.latitude, position.coords.longitude)
+        });
+  
+    } else { 
+        console.log("Geolocation is not supported in oyur browser")
+    } 
+    
+    async function Send_Request_to_Airly(lat, lon){
+
+        console.log ('s')
+        
+        try {
+            const response = await fetch ('https://airapi.airly.eu/v2/measurements/point?indexType=AIRLY_CAQI&lat=' + lat + '&lng=' + lon, {
+                headers: {
+                'Content-Type': 'application/json',
+                'apikey': 'toWFYU0TKrDuJvc9VJsZZhX7OEbQ05rh'
+                }
+
+            });
+
+            const response_json = await response.json();
+
+            document.getElementById('currentAir').setAttribute("style", "background-color: " + response_json.current.indexes[0].color +  ";");
+            document.getElementById('currentAirDesc').innerHTML = "Current air quality in your location is: " + 
+            response_json.current.indexes[0].level + ". </br>" + response_json.current.indexes[0].advice + 
+            "  </br> <h6>" + response_json.current.values[0].name + " - " + response_json.current.values[0].value + ", "
+                    + response_json.current.values[1].name + " - " + response_json.current.values[1].value + ", "
+                    + response_json.current.values[2].name + " - " + response_json.current.values[2].value + ". "
+                + "Data provided by Airly API. </h6>"
+            
+            console.log(response_json)
+
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('currentAirDesc').innerHTML = "Sorry, no current Air Quality data available for your location." 
+        }  
+
+        
+        
+
+
+
+    }
+
+
+    //https://airapi.airly.eu/v2/measurements/point?indexType=AIRLY_CAQI&lat=52.27521&lng=20.963132
+
     </script>
 
 </body>
