@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>HereIsMyPlace</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/stylish-portfolio.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+</head>
+<style>
+    .header {
+        font-family: Candara;
+        color:black;
+    }
+    .container {
+        font-family: Candara;
+    }
+    .bg-primary {
+        color: #fff;
+        background-color: #577a33;
+
+    }
+    .text-primary {
+        color: #577a33;
+
+    }   
+
+    
+
+</style>
+
+
+<body>
+
+    <!-- Navigation -->
+    <a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="fa fa-bars"></i></a>
+    <nav id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="fa fa-times"></i></a>
+            <li class="sidebar-brand">
+                <a href="#top"  onclick = $("#menu-close").click(); >HERE Is My Place</a>
+            </li>
+            <li>
+                <a href="#top" onclick = $("#menu-close").click(); >Home</a>
+            </li>
+            <li>
+                <a href="#how" onclick = $("#menu-close").click(); >Challenge</a>
+            </li>
+            <li>
+                <a href="#idea1" onclick = $("#menu-close").click(); >More Greenery</a>
+            </li>
+            <li>
+                <a href="#portfolio" onclick = $("#menu-close").click(); >Portfolio</a>
+            </li>
+            <li>
+                <a href="#contact" onclick = $("#menu-close").click(); >Contact</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Header -->
+    <header id="top" class="header">
+        <div class="text-vertical-center">
+            <h1>Here Is My Place</h1>
+            <h3>Turning Warsaw to healthy and vibrant city using maps</h3>
+            <br>
+            <a href="#how" class="btn btn-dark btn-lg">Find out why and how?</a>
+        </div>
+    </header>
+
+    <!-- About -->
+    <section id="how" class="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Challenge</h2>
+                    <p class="lead">Warsaw, a capital of Poland, is attracting people with lots of working opportunities. Almost 300K of them
+                        commute every day from surrounding areas to their place of work spending spending on average 41 minutes in a seat. 
+                        Huge amount of car traffic makes the city by far too congested and inaccessible for citizens. Moreover, with rapidly
+                        expanding high building business and housing ares, the air quality seems to be the most crucial issue that local
+                        authorities have to tackle as a first priority.
+                        
+                    </p>
+                    <p class="lead"> So... how can maps and HERE XYZ services can help to decrease congestion
+                        and improve the quality of air? Simply, invest more in the eco-friendly infrastructure, encourage people to change 
+                        their habits by showing them what profits they could have achieved. Here is how to do that:
+                    </p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+
+
+    <!-- Idea 1 -->
+    <aside class="call-to-action bg-primary" id="idea1">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                        <div class="service-item">
+                            <h2><b>Step #1</b></h2>
+                            <hr class="small">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-tree fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Vast areas of Greenery</strong>
+                                </h4>
+                                <p>Although Varsovians might enjoy huge areas of parks (~ 110 m<SUP>2</SUP>/person
+                                    which stands the city at the 12<SUP>th</SUP> place around the world) at stone's throw,
+                                    there is still a lot to be done. 
+                                </p>
+                                <p> The spatial distribution of green areas does not overlay with locations
+                                    of the most populated areas (See map below). The lack of natural areas is especially 
+                                    affecting the city center (Śródmieście) and the south-west part of the city
+                                    (Ursus) depicted as red areas on the map below. Thus, some more natural areas needs to 
+                                    be created there to let people unwind and help city to breath a cleaner air.
+                                </p>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Map -->
+    <section id="mapIdea1" class="map">
+        <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://xyz.here.com/viewer/?project_id=614fabc9-2387-4ef7-8da7-bc87b60a24c5">
+        </iframe>
+    </section>
+
+
+    <!-- Idea 2 -->
+    <aside class="call-to-action bg-primary" id="idea1">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                            <div class="service-item">
+                                <h2><b>Step #2</b></h2>
+                                <hr class="small">
+                                    <span class="fa-stack fa-4x">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-bicycle fa-stack-1x text-primary"></i>
+                                </span>
+                                <h4>
+                                    <strong>Kilometers of Cycleways</strong>
+                                </h4>
+                                <p>Build more cycling routes connecting most populated areas with business districts.
+                                    According to the latest data, everyday there is around 75K cyclists travelling across 600
+                                    kilometers of available cycleways.
+                                </p>
+                                <p> This is worth-spreading solution as it encourages citizens to take-up
+                                    healthier life-style, reduces emission on CO<SUB>2</SUB> / NO<SUB>X</SUB> and helps to save
+                                    some money.
+                                </p>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    
+        <!-- Map -->
+        <section id="mapIdea1" class="map">
+            <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://xyz.here.com/viewer/?project_id=a645a27b-051d-4d02-b69a-9a2d5540708d">
+            </iframe>
+        </section>
+    
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 col-lg-offset-1 text-center">
+                    <h4><strong>Disclaimers and data sources</strong>
+                    </h4>
+                    <h5>This site is available only for a personal, non-commercial use. 
+                        Author disclaims any liability to data, names used on this website.</h5>
+                    <p>
+                        Commuters | <a href="https://warszawa-praca.eu/ile-osob-dojezdza-codziennie-do-warszawy-do-pracy/"> Source</a></br>
+                        Greenery | <a href="https://portalkomunalny.pl/warszawa-na-12-miejscu-wsrod-najbardziej-zielonych-miast-swiata-373923/"> Source</a></br>
+                        Cycling | <a href="https://rowery.um.warszawa.pl/rowerowa-warszawa"> Source</a></br>
+                        Image by Rudy and Peter Skitterians | <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=996626"> Source</a></br>
+                        GeoSpatial Data | Open Street Map and um.warszawa.pl </br>
+                    </p>
+                   
+                    <ul class="list-unstyled">
+                        <li><i class="fa fa-envelope-o fa-fw"></i>  <a href="mailto:adamnicinski@hotmail.com">Send a message to me</a>
+                        </li>
+                    </ul>
+                    <hr class="small">
+                    <p class="text-muted">&copy; 2019 - Map your world! - HERE Mapathon </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script>
+    // Closes the sidebar menu
+    $("#menu-close").click(function(e) {
+        e.preventDefault();
+        $("#sidebar-wrapper").toggleClass("active");
+    });
+
+    // Opens the sidebar menu
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#sidebar-wrapper").toggleClass("active");
+    });
+
+    // Scrolls to the selected menu item on the page
+    $(function() {
+        $('a[href*=#]:not([href=#])').click(function() {
+            if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') || location.hostname == this.hostname) {
+
+                var target = $(this.hash);
+                target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+                if (target.length) {
+                    $('html,body').animate({
+                        scrollTop: target.offset().top
+                    }, 1000);
+                    return false;
+                }
+            }
+        });
+    });
+    </script>
+
+</body>
+</html>
