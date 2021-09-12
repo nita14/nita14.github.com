@@ -1,1 +1,569 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Poverty Explorer</title>
+    <style>
+        html,
+        body,
+        #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        }
+    </style>
+    <script src="https://unpkg.com/@esri/arcgis-rest-request@3.0.0/dist/umd/request.umd.js"></script>
+    <script src="https://unpkg.com/@esri/arcgis-rest-auth@3.0.0/dist/umd/auth.umd.js"></script>
+    <script src="https://unpkg.com/@esri/arcgis-rest-demographics@3.0.0/dist/umd/demographics.umd.js"></script>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.20/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.20/"></script>
+    <script>
+        require(["esri/config","esri/Map", "esri/views/MapView",
+        "esri/layers/FeatureLayer", 
+        "esri/layers/GraphicsLayer", "esri/Graphic",
+        
+        "esri/widgets/Expand", "esri/widgets/LayerList", "esri/widgets/BasemapToggle",
+        "esri/widgets/Search", "esri/widgets/Sketch/SketchViewModel",
+    
+        "esri/geometry/geometryEngine","esri/rest/serviceArea",
+        "esri/rest/support/ServiceAreaParameters",
+        "esri/rest/support/FeatureSet"], 
+        
+        function (esriConfig, Map, MapView,
+        FeatureLayer,
+        GraphicsLayer, Graphic,
+        
+        Expand, LayerList, BasemapToggle,
+        Search, SketchViewModel,
+        
+        geometryEngine, serviceArea, 
+        ServiceAreaParams, FeatureSet) {
 
+            const serviceAreaUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/ServiceAreas/NAServer/ServiceArea_World/solveServiceArea";
+
+            ////Variables
+            let tractNamesFilterResult = [];
+            let bufferEnabled = false;
+            let serviceAreaEnabled = false;
+
+            const polySymbol = {
+                type: "simple-fill",
+                color: [255, 0, 255, 0.3],
+                outline: {
+                    color: [255, 255, 255, 255],
+                    width: 1.5
+
+                }
+            };
+
+            const arcgisRestAuth = new arcgisRest.ApiKey({
+                key: "AAPK3615e416d4574e5fb06b79cb6cefc5b15uS7CpiTBKr0qj1PP22T88nmOxOdAd-C4Cdue3Ao31XNMpdhXmZBb8PDLx88i4H9"
+            });
+
+            const map = new Map({
+                basemap: "arcgis-dark-gray"
+            });
+
+            const view = new MapView({
+                map: map,
+                center: [-83.1, 42.4], 
+                zoom: 10, 
+                container: "viewDiv" 
+            });
+
+            /////////////////////
+            ////Add Layers with config
+            /////////////////////
+            const povertyLayer = new FeatureLayer({
+                portalItem: {
+                    id: "f5ef8201783441409505156fbe5c0e6b"
+                },
+                id: "povLyr",
+                outFields: ["NAME", "B17020_calc_pctPovE"],
+                title: "Poverty",
+                opacity: 0.55,
+                popupTemplate: {
+                title: "Poverty in {NAME}",
+                content:
+                    "<b>{B17020_calc_pctPovE}%</b> of adults are below the poverty level"
+                },
+                definitionExpression: "B17020_calc_pctPovE >= 15"     
+            });
+
+            map.add(povertyLayer);
+
+            //add education layer
+            const educationLayer = new FeatureLayer({
+                portalItem: {
+                    id: "669297059f264359acdb0597ce12039a"
+                },
+                id: "eduLyr",
+                outFields: ["NAME", "B15002_calc_pctLTHSE"],  // "B15002_calc_numLTHSE", "B15002_001E"
+                title: "Education",
+                popupTemplate: {
+                title: "Education in {NAME}",
+                content:
+                    "<b>{B15002_calc_pctLTHSE}%</b> of population with less than High School completed." 
+                },
+                definitionExpression: "B15002_calc_pctLTHSE >= 12"
+
+            });
+
+            map.add(educationLayer);
+            
+            //add unemployment
+            const unemploymentLayer = new FeatureLayer({
+                portalItem: {
+                    id: "c117770531e24602a2a5b10069f5f9be"
+                },
+                id: "uneLyr",
+                title: "Unemployment",
+                popupTemplate: {
+                    title: "Unemployment in {NAME}",
+                    content:
+                     "<b>{B23025_calc_pctUnempE}%</b> of population is unemployed." 
+                },
+                definitionExpression: "B23025_calc_pctUnempE >= 6"
+            });
+
+            map.add(unemploymentLayer);
+
+            //add filter Graphics layer
+            let filterLayer = new GraphicsLayer({    
+                
+            });
+            map.add(filterLayer);
+
+            const sketchViewModel = new SketchViewModel({
+                view: view,
+                layer: filterLayer,
+                updateOnGraphicClick: false,
+                polygonSymbol: polySymbol
+                
+            });
+
+            let geometryLocalSummary = null;
+            //////////////////
+            //Add widgets
+            /////////////////
+
+            const searchWidget = new Search({
+                view: view
+            });
+
+            view.ui.add(searchWidget, {
+                position: "top-right"
+            });
+
+            //Layer list
+            view.when(function () {
+                let layerList = new LayerList({
+                    view: view,
+                    listItemCreatedFunction: function (event) {
+                        const item = event.item;
+                        if (item.layer.type != "group") {
+                        item.panel = {
+                            content: "legend",
+                            open: true
+                        };
+                        }
+                    }
+                    
+                });
+                
+                layerListExpand = new Expand({
+                    expandIconClass: "esri-icon-layer-list",
+                    view: view,
+                    content: layerList,
+                    expanded: false,
+                    expandTooltip: "Expand map content",
+                    label: "Map content"
+                });
+                view.ui.add(layerListExpand, "top-left");
+                
+                
+            });
+
+            //filter blocks widget
+            const localStats = document.getElementById("localStats");
+            const localstatsExpand = new Expand({
+                expandIconClass: "esri-icon-group",
+                view: view,
+                content: localStats,
+                expanded: false,
+                expandTooltip: "Expand local indicator",
+                label: "Local indicators"
+            });
+            view.ui.add(localstatsExpand, "top-left");
+            document.getElementById("localStats").style.visibility = 'visible';
+
+            //local indicators
+            const filterArea = document.getElementById("filterArea");
+            const filterlayersExpand = new Expand({
+                expandIconClass: "esri-icon-filter",
+                view: view,
+                content: filterArea,
+                expanded: false,
+                expandTooltip: "Expand vulnerable areas finder",
+                label: "Vulnerable areas finder"
+            });
+            view.ui.add(filterlayersExpand, "top-left");
+            document.getElementById("filterArea").style.visibility = 'visible';
+
+            //basemap toggle
+            const basemapToggle = new BasemapToggle({
+                view: view,  
+                nextBasemap: "arcgis-light-gray"  
+            });
+            view.ui.add(basemapToggle, "bottom-right");
+            ///////
+            /// Add event listeners
+            ///////
+            document.getElementById('filterAreaDo').addEventListener('click', function (event) {
+                filterLayer.removeAll()
+                document.getElementById("finderLabelResults").innerHTML = 'Filtering...'
+                tractNamesFilterResult = []
+                queryFeatureLayer(povertyLayer).then(queryFeatureLayer).then(queryFeatureLayer)
+            }, false);
+
+            document.getElementById('filterAreaClear').addEventListener('click', function (event) {
+                filterLayer.removeAll()
+                tractNamesFilterResult = []
+                document.getElementById("finderLabelResults").innerHTML = ''
+            }, false);
+
+            document.getElementById('polygonButton').addEventListener('click', function (event) {
+                sketchViewModel.create("polygon");
+                bufferEnabled = false;
+                serviceAreaEnabled = false;
+                setActiveButton(this);
+            }, false);
+
+            document.getElementById("clearAreaButton").onclick = function() {
+                sketchViewModel.cancel();
+                filterLayer.removeAll();
+                setActiveButton();
+                geometryLocalSummary = null;
+                bufferEnabled = false;
+                serviceAreaEnabled = false;
+            };
+
+            sketchViewModel.on("create", function(event) {
+                if (event.state === "complete") {
+                    console.log(event.graphic);
+                    filterLayer.add(event.graphic);
+                    geometryLocalSummary = event.graphic.geometry;
+                    getLocalSummary(false)
+
+                }
+            });
+
+            let clickListener = view.on("click", (event) => {
+                
+
+                let eventPoint = {
+                    type: "point",
+                    y: event.mapPoint.latitude,
+                    x : event.mapPoint.longitude,
+                    spatialReference: {
+                        wkid: 4326
+                    }
+                };
+                
+                if (bufferEnabled){
+                    event.stopPropagation();
+                    filterLayer.removeAll()
+                    
+                    const buffer = geometryEngine.geodesicBuffer(eventPoint,
+                        parseInt(document.getElementById("bufferRadius").value), "miles")
+                   
+                    let bufferGraphic = new Graphic({
+                        geometry: buffer,
+                        symbol: polySymbol
+                    });
+                    filterLayer.add(bufferGraphic);
+                    view.goTo(bufferGraphic)
+                    geometryLocalSummary = buffer;
+                    getLocalSummary(true)
+
+                } else if (serviceAreaEnabled){
+                    event.stopPropagation();
+                    filterLayer.removeAll()
+                    const gr = new Graphic({
+                        geometry: eventPoint,
+                    });
+
+                    const featureSet = new FeatureSet({
+                        features: [gr]
+                    });
+       
+                    const serviceAreaParameters = new ServiceAreaParams({
+                        facilities: featureSet,
+                        defaultBreaks: [parseInt(document.getElementById("serviceAreaMinutes").value)],
+                        trimOuterPolygon: true,
+                        outSpatialReference: {wkid:4326}
+                    });
+                    
+                    serviceArea.solve(serviceAreaUrl, serviceAreaParameters)
+                    .then(function(result){
+                        if (result.serviceAreaPolygons.length) {
+
+                        result.serviceAreaPolygons.forEach(function(graphic){
+                            graphic.symbol = polySymbol
+                            filterLayer.add(graphic);
+                            view.goTo(graphic)
+                            geometryLocalSummary = graphic.geometry;
+                            getLocalSummary(true)
+                        });
+                        }
+                    }, function(error){
+                        console.log(error);
+                    });
+
+                } 
+                
+            });
+
+            document.getElementById("bufferButton").onclick = function() {
+                bufferEnabled = true;  
+            };
+            document.getElementById("serviceAreaButton").onclick = function() {
+                serviceAreaEnabled = true;  
+            };
+            
+            
+            //////
+            // Functions
+            ///////
+            function getLocalSummary(isRingGeometry){
+
+                if (isRingGeometry){
+                    studyGeometry = [{"geometry":{"rings": geometryLocalSummary.rings, "spatialReference": {"wkid":4326}}}]
+                } else {
+                    studyGeometry = [{"geometry":{"rings": geometryLocalSummary.rings, "spatialReference": {"wkid":3857}}}]
+                }
+                
+                console.log([geometryLocalSummary])
+                arcgisRest.queryDemographicData({
+                    studyAreas: studyGeometry,
+                    analysisVariables : ["AtRisk.TOTPOP_CY","AtRisk.AVGHINC_CY","EmploymentUnemployment.UNEMPRT_CY",
+                        "AtRisk.ACSHHBPOV","AtRisk.ACSPOVINDX","crime.CRMCYTOTC"],
+                    authentication: arcgisRestAuth
+                }).then((response) => {
+                    if (response.results[0].value.FeatureSet.length > 0 &&
+                      response.results[0].value.FeatureSet[0].features.length > 0) {
+                        const attributes = response.results[0].value.FeatureSet[0].features[0].attributes;
+                        console.log(attributes)
+                        
+                        const title = "Local indicators"
+                        const content = "This community has a population of <b>" + attributes.TOTPOP_CY  + "</b>." + 
+                         " Average household income is around: " + attributes.AVGHINC_CY  + " $.<br><br>" + "Unemployment rate is: " + attributes.UNEMPRT_CY  + " %, " + 
+                         " with the crime index of " + attributes.CRMCYTOTC  + ".<br><br>" + "About <b>" + attributes.ACSHHBPOV  + "</b> people live below the poverty line which" +
+                         " is around <b>" + parseInt((attributes.ACSHHBPOV/attributes.TOTPOP_CY)*100, 10)   +" </b>percent of the whole population. The poverty index is "  + attributes.ACSPOVINDX  + "."
+
+                        view.popup.open({
+                            location: geometryLocalSummary.extent.center,
+                            title: title,
+                            content: content
+                        });
+                    }
+                });
+
+            }
+
+            function setSQLquery(layerToExecute){
+
+                let whereClause = ""
+
+                if (layerToExecute.id === "povLyr"){
+                    whereClause = "B17020_calc_pctPovE >= " + document.getElementById("fromPov").value 
+                    + " AND B17020_calc_pctPovE <= " + document.getElementById("toPov").value
+
+                } else if (layerToExecute.id === "eduLyr"){
+                    whereClause = "B15002_calc_pctLTHSE >= " + document.getElementById("fromEdu").value 
+                    + " AND B15002_calc_pctLTHSE <= " + document.getElementById("toEdu").value
+
+                } else if (layerToExecute.id === "uneLyr"){
+                    whereClause = "B23025_calc_pctUnempE >= " + document.getElementById("fromUne").value 
+                    + " AND B23025_calc_pctUnempE <= " + document.getElementById("toUne").value
+                } else {
+                    console.log("layer.id not recognized")
+                }
+
+                return whereClause
+            }
+            
+            function queryFeatureLayer(layerToExecute) {
+
+                const queryToExecute = {
+                    where: setSQLquery(layerToExecute), 
+                    spatialRelationship: "intersects",
+                    geometry: view.extent,
+                    outFields: ["NAME"],
+                    returnGeometry: true
+                };
+                return layerToExecute.queryFeatures(queryToExecute)
+                    .then((results) => {
+                        console.log(layerToExecute.id + " - features count: " + results.features.length)
+                        if (layerToExecute.id === "povLyr"){
+                            tractNamesFilterResult = results.features.map((feat) => { return feat.attributes.NAME})
+                            return educationLayer
+                        } 
+                        //find intersection of two arrays
+                        let tractNames = results.features.map((feat) => { return feat.attributes.NAME})
+                        let filteredArray = tractNames.filter(value => tractNamesFilterResult.includes(value));
+                        tractNamesFilterResult = filteredArray
+                        
+                        if (layerToExecute.id === "eduLyr"){
+                            //console.log(tractNamesFilterResult.length)
+                            return unemploymentLayer
+
+                        } else if (layerToExecute.id === "uneLyr"){
+
+                            results.features.forEach((feature) => {
+                                if (tractNamesFilterResult.includes(feature.attributes.NAME)){
+                                    let gr = new Graphic({
+                                        attributes: {"NAME" : feature.attributes.NAME},
+                                        geometry: feature.geometry,
+                                        popupTemplate: {
+                                            title: "Finder results",
+                                            content:
+                                            "<b>{NAME}</b> is a vulnerable area." 
+                                        },
+                                        symbol: {
+                                            type: "simple-fill", 
+                                            color: [245,0, 245, 0.1],
+                                            style: "solid",
+                                            outline: {  
+                                                color: "magenta",
+                                                width: 1.5
+                                            }
+                                        }
+                                    });
+
+                                    filterLayer.add(gr)
+                                }
+
+                            });
+                            document.getElementById("finderLabelResults").innerHTML = '<strong>Total number of tracks in the view: ' + tractNamesFilterResult.length + '</strong>' 
+                            //console.log(tractNamesFilterResult.length)
+                            return 1
+                        }
+                        
+                    }).catch((error) => {
+                        console.log(error.error);
+                        
+                    });
+
+            }
+
+            //// local explorer
+
+            function setActiveButton(selectedButton) {
+                view.focus();
+                filterLayer.removeAll();
+                var elements = document.getElementsByClassName("active");
+                for (var i = 0; i < elements.length; i++) {
+                    elements[i].classList.remove("active");
+                }
+                if (selectedButton) {
+                    selectedButton.classList.add("active");
+                }
+            }
+        });
+    </script>
+
+    </head>
+    <body>
+        <div id="viewDiv">
+            <div id="localStats"  style="visibility: hidden;">
+                <div class="esri-layer-list esri-widget esri-widget--panel"
+                    style="background-color: #ffffff;
+                    padding: 3px 3px; text-align: center; border-color: #e8e8e8;
+                    border-style: solid; border-width: 4px;">
+                    <label class="esri-layer-list__item-title" style="font-size: 16;"><b>Local indicators</b></label>
+                    <label class="esri-layer-list__item-title">Specify type of area of interest:</label></br>                   
+                    
+                    <div class="row" style="background-color: #e9e7e7;">
+                        <p style="margin: 10 2 2 2">
+                            <button class="action-button esri-icon-polygon" id="polygonButton" type="button"
+                                title="Draw polygon"></button>
+                            <button class="action-button esri-icon-radio-unchecked" id="bufferButton" type="button"
+                                title="Draw buffer"></button>
+                            <button class="action-button esri-icon-lasso" id="serviceAreaButton" type="button"
+                                title="Draw service area"></button>
+                            <button class="action-button esri-icon-trash" id="clearAreaButton" type="button" title="Clear areas"></button>
+                            
+                        </p>
+                    </div>
+                    <div class="row" style="background-color: #e9e7e7;">
+                        <p style="margin: 10 2 2 2">
+                            <label class="esri-layer-list__item-title"><b>Buffer radius (miles):</b>
+                                &nbsp;<input style="width: 50px;" id="bufferRadius" type="number" placeholder="" min="1" max="100" maxlength="3" value="2" size="4">
+                            </label>    
+                        </p>
+                    </div>
+                    <div class="row" style="background-color: #e9e7e7;">
+                        <p style="margin: 10 2 2 2">
+                            <label class="esri-layer-list__item-title"><b>Driving area (minutes):</b>
+                                &nbsp;<input style="width: 50px;" id="serviceAreaMinutes" type="number" placeholder="" min="1" max="100" maxlength="3" value="5" size="4">
+                            </label>    
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="filterArea"  style="visibility: hidden;">
+                <div class="esri-layer-list esri-widget esri-widget--panel"
+                    style="background-color: #ffffff;
+                    padding: 3px 3px; text-align: center; border-color: #e8e8e8;
+                    border-style: solid; border-width: 4px;">
+                    <label class="esri-layer-list__item-title" style="font-size: 16;"><b>Vulnerable areas finder</b></label>
+                    <label class="esri-layer-list__item-title">Specify filtering criterias:</label></br>                   
+                    
+                    <div class="row" style="background-color: #e9e7e7;">
+                        <p style="margin: 10 2 2 2">
+                            <label class="esri-layer-list__item-title"><b>Poverty:</b>
+                                &nbsp;<input style="width: 50px;" id="fromPov" type="number" placeholder="" min="15" max="100" maxlength="3" size="4">
+                                -&nbsp;<input style="width: 50px;" id="toPov" type="number" placeholder="" min="15" max="100" maxlength="3" size="4">
+                            </label>
+                            
+                        </p>
+                    </div>
+                    <i style="font-size: 0.8rem; background-color: #d2d2d2;">% of population below poverty line</i>
+                    
+                    <div class="row" style="background-color: #e9e7e7;">
+                        <p style="margin: 10 2 2 2;">
+                            <label class="esri-layer-list__item-title"><b>Education:</b>
+                                &nbsp;<input style="width: 50px;" id="fromEdu" type="number" placeholder="" min="12" max="100" maxlength="3" size="4">
+                                -&nbsp;<input style="width: 50px;" id="toEdu" type="number" placeholder="" min="12" max="100" maxlength="3" size="4">
+                            </label>
+                            
+                        </p>
+                    </div>
+                    <i style="font-size: 0.8rem; background-color: #d2d2d2;">% of population with High School not completed</i>
+                    <div class="row" style="background-color: #e9e7e7;">
+                        <p style="margin: 10 2 2 2">
+                            <label class="esri-layer-list__item-title"><b>Unemployment:</b> 
+                                &nbsp;<input style="width: 50px;" id="fromUne" type="number" placeholder="" min="6" max="100" maxlength="3" size="4">
+                                -&nbsp;<input style="width: 50px;" id="toUne" type="number" placeholder="" min="6" max="100" maxlength="3" size="4">
+                            </label>
+                            
+                        </p>
+                    </div>
+                    <i style="font-size: 0.8rem; background-color: #d2d2d2;">% of population unemployed</i>
+                    <div class="row">
+                        <p style="margin: 20 2 5 2">
+                            <button id="filterAreaDo" style="background-color: #0079c1; border: none; color: white; padding: 5px 20px;">Filter</button>
+                            <button id="filterAreaClear" style="background-color: #e8912e; border: none; color: black; padding: 5px 20px;">Clear</button>
+                            
+                        </p>
+                    </div>
+                    <div class="row">
+                        <label id="finderLabelResults" class="esri-layer-list__item-title"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
